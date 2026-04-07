@@ -5,7 +5,6 @@
 #include "Scene.h"
 #include "glm_maths.h"
 
-#include <iostream>
 #include <glm/ext/matrix_clip_space.hpp>
 
 Scene::Scene(const float screen_width, const float screen_height) {

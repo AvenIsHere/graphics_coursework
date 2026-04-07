@@ -16,12 +16,12 @@ add_executable(graphics_coursework main.cpp
         Scene.h
         objects/SceneObject.cpp
         objects/SceneObject.h
-        CShader.cpp
-        CShader.h
         objects/Cube.cpp
         objects/Cube.h
         glm_maths.cpp
         glm_maths.h
+        Shader.h
+        Shader.cpp
 )
 
 target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES})

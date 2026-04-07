@@ -4,12 +4,14 @@
 
 #ifndef GRAPHICS_COURSEWORK_CUBE_H
 #define GRAPHICS_COURSEWORK_CUBE_H
+#include <GL/glew.h>
+
 #include "SceneObject.h"
 
 
 class Cube : public SceneObject {
 public:
-    explicit Cube(glm::vec3 pos_vec, const CShader& shader);
+    explicit Cube(glm::vec3 pos_vec);
     void draw(const glm::mat4& camera_pos, const glm::mat4& projection) const;
 
 private:

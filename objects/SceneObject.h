@@ -9,7 +9,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
-#include "../CShader.h"
+#include "../Shader.h"
 
 
 class SceneObject {
@@ -18,7 +18,7 @@ public:
     virtual ~SceneObject() = default;
     virtual void draw(const glm::mat4& camera_pos, const glm::mat4& projection) const = 0;
 
-    CShader shader;
+    Shader *shader;
     glm::vec3 pos;
     glm::mat4 model_matrix;
 };

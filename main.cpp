@@ -23,16 +23,16 @@ int main(int argc, char** argv) {
     glutCreateWindow("Test");
 
     glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-    if (GLEW_OK != err) {
+    if (const GLenum err = glewInit(); GLEW_OK != err) {
         std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
     }
 
-    CShader cubeShader = CShader().CreateShaderProgram();
-
     scene = new Scene(SCREEN_WIDTH, SCREEN_HEIGHT);
-    scene->addObject(std::make_unique<Cube>(Cube(glm::vec3(0, -1, 0), cubeShader)));
+
+    scene->addObject(std::make_unique<Cube>(Cube(glm::vec3(0, -1, 0))));
+
     glutDisplayFunc(render);
     glutMainLoop();
+
     return 0;
 }
