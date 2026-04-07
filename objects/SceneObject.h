@@ -4,7 +4,7 @@
 
 #ifndef GRAPHICS_COURSEWORK_SCENEOBJECT_H
 #define GRAPHICS_COURSEWORK_SCENEOBJECT_H
-#include <glm/fwd.hpp>
+
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>

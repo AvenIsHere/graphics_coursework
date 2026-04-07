@@ -12,18 +12,30 @@
 
 
 class Scene {
+    enum Direction {
+        FORWARDS,
+        BACKWARDS,
+        LEFT,
+        RIGHT,
+    };
+
 public:
     Scene(float screen_width, float screen_height);
     void update();
     void render() const;
-    void handleInput(unsigned char key, int x, int y);
+    void handle_input_down(unsigned char key, int x, int y);
+    void handle_input_up(unsigned char key, int x, int y);
     void addObject(std::unique_ptr<SceneObject> obj);
+    void move(Direction direction, float amount);
 private:
     std::vector<std::unique_ptr<SceneObject>> objects;
     float rotation_angle;
+    float speed = 0.2f;
     glm::vec3 camera_pos{};
     glm::mat4 view_matrix{};
     glm::mat4 proj_matrix{};
+
+    bool keys[256] = { false };
 
     float screen_width;
     float screen_height;
