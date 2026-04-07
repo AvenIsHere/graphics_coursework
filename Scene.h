@@ -17,6 +17,8 @@ class Scene {
         BACKWARDS,
         LEFT,
         RIGHT,
+        UP,
+        DOWN,
     };
 
 public:
@@ -42,7 +44,8 @@ public:
 
 private:
     std::vector<std::unique_ptr<SceneObject>> objects;
-    float rotation_angle;
+    float rotation_x;
+    float rotation_y;
     float speed = 0.1f;
     glm::vec3 camera_pos{};
     glm::mat4 view_matrix{};
