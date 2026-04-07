@@ -6,8 +6,6 @@
 #define GRAPHICS_COURSEWORK_SCENE_H
 #include <memory>
 #include <vector>
-#include <GL/glew.h>
-#include <GL/glut.h>
 #include <glm/glm.hpp>
 
 #include "objects/SceneObject.h"

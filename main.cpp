@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
     scene = new Scene(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    scene->addObject(std::make_unique<Cube>(Cube(glm::vec3(0, -1, 0))));
+    scene->addObject(std::make_unique<Cube>(glm::vec3(0, 0, -5), 2.0f));
 
     glutDisplayFunc(render);
     glutMainLoop();

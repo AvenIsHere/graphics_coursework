@@ -10,8 +10,10 @@ Shader::Shader()
 	m_vertexShader = 0;
 	m_fragmentShader = 0;
 	m_programObject = 0;
-	proj_location = glGetUniformLocation(this->handle(), "ProjectionMatrix");
-	model_view_location = glGetUniformLocation(this->handle(), "ModelViewMatrix");
+	proj_location = 0;
+	model_view_location = 0;
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 
@@ -45,52 +47,47 @@ bool Shader::load(const std::string& name, const char* vertexFilename, const cha
 		
 		return false;
 	}
+	//create a fragment shader and set the shader source
+	m_fragmentShader = loadShader(fragmentFilename, GL_FRAGMENT_SHADER);
 
-	else
+	//compile the fragment shader
+	glCompileShader(m_fragmentShader);
+
+	//check for any compiling errors
+	glGetShaderiv(m_fragmentShader, GL_COMPILE_STATUS, &success);
+
+	if(!success)
 	{
-		//create a fragment shader and set the shader source
-		m_fragmentShader = loadShader(fragmentFilename, GL_FRAGMENT_SHADER);
+		std::cout << std::endl << "Error compiling GLSL fragment shader: '" << fragmentFilename << "'" << std::endl << std::endl;
+		std::cout << "Shader info log:" << std::endl << shaderInfoLog(m_fragmentShader) << std::endl;
 
-		//compile the fragment shader
-		glCompileShader(m_fragmentShader);
+		return false;
+	}
+	//create the program
+	m_programObject = glCreateProgram();
 
-		//check for any compiling errors
-		glGetShaderiv(m_fragmentShader, GL_COMPILE_STATUS, &success);
+	//attach the vertex and fragment shaders
+	glAttachShader(m_programObject, m_vertexShader);
+	glAttachShader(m_programObject, m_fragmentShader);
 
-		if(!success)
-		{
-			std::cout << std::endl << "Error compiling GLSL fragment shader: '" << fragmentFilename << "'" << std::endl << std::endl;
-			std::cout << "Shader info log:" << std::endl << shaderInfoLog(m_fragmentShader) << std::endl;
-			
-			return false;
-		}
-        
-		else
-		{
-			//create the program
-			m_programObject = glCreateProgram();
+	//link it all together
+	glLinkProgram(m_programObject);
 
-			//attach the vertex and fragment shaders
-			glAttachShader(m_programObject, m_vertexShader);
-			glAttachShader(m_programObject, m_fragmentShader);
+	//check for any errors with the shader program
+	glGetProgramiv(m_programObject, GL_LINK_STATUS, &success);
 
-			//link it all together
-			glLinkProgram(m_programObject);
+	proj_location = glGetUniformLocation(this->handle(), "ProjectionMatrix");
+	model_view_location = glGetUniformLocation(this->handle(), "ModelViewMatrix");
 
-			//check for any errors with the shader program
-			glGetProgramiv(m_programObject, GL_LINK_STATUS, &success);
-        
-			if(!success)
-			{
-				std::cout << std::endl << "Error linking GLSL shaders into a shader program." << std::endl;
-				std::cout << "GLSL vertex shader: '" << vertexFilename << "'" << std::endl;
-				std::cout << "GLSL fragment shader: '" << fragmentFilename << "'" << std::endl << std::endl;
-				std::cout << "Program info log:" << std::endl << programInfoLog(m_programObject) << std::endl;
-				
-				return false;
-			}
-		}
-    }
+	if(!success)
+	{
+		std::cout << std::endl << "Error linking GLSL shaders into a shader program." << std::endl;
+		std::cout << "GLSL vertex shader: '" << vertexFilename << "'" << std::endl;
+		std::cout << "GLSL fragment shader: '" << fragmentFilename << "'" << std::endl << std::endl;
+		std::cout << "Program info log:" << std::endl << programInfoLog(m_programObject) << std::endl;
+
+		return false;
+	}
 
 	std::cout << "Loaded GLSL program: '" << m_name << "'" << std::endl;
 
