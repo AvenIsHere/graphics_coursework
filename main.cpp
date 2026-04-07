@@ -23,7 +23,19 @@ void handle_input_down(unsigned char key, int x, int y) {
     }
 }
 
+void handle_input_down(int key, int x, int y) {
+    if (scene) {
+        scene->handle_input_down(key, x, y);
+    }
+}
+
 void handle_input_up(unsigned char key, int x, int y) {
+    if (scene) {
+        scene->handle_input_up(key, x, y);
+    }
+}
+
+void handle_input_up(int key, int x, int y) {
     if (scene) {
         scene->handle_input_up(key, x, y);
     }
@@ -50,9 +62,15 @@ int main(int argc, char** argv) {
     scene->addObject(std::make_unique<Cube>(glm::vec3(0, 0, -5), 2.0f));
 
     glutDisplayFunc(render);
+
     glutKeyboardFunc(handle_input_down);
     glutKeyboardUpFunc(handle_input_up);
+
+    glutSpecialFunc(handle_input_down);
+    glutSpecialUpFunc(handle_input_up);
+
     glutIdleFunc(update);
+
     glutMainLoop();
 
     return 0;
