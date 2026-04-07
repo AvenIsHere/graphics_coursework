@@ -22,6 +22,8 @@ add_executable(graphics_coursework main.cpp
         glm_maths.h
         Shader.h
         Shader.cpp
+        objects/MeshObject.cpp
+        objects/MeshObject.h
 )
 
 target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES})

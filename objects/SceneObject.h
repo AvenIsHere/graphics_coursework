@@ -16,7 +16,7 @@ class SceneObject {
 public:
     // Destructor
     virtual ~SceneObject() = default;
-    virtual void draw(const glm::mat4& camera_pos, const glm::mat4& projection) const = 0;
+    virtual void draw(const glm::mat4& view, const glm::mat4& projection) const = 0;
 
     Shader *shader;
     glm::vec3 pos;

@@ -5,37 +5,25 @@
 #ifndef GRAPHICS_COURSEWORK_CUBE_H
 #define GRAPHICS_COURSEWORK_CUBE_H
 #include <vector>
-#include <GL/glew.h>
 
-#include "SceneObject.h"
+#include "MeshObject.h"
 
 
-class Cube : public SceneObject {
+class Cube : public MeshObject {
 public:
     explicit Cube(glm::vec3 pos_vec, float side_size);
-    ~Cube();
-
-    void draw(const glm::mat4& camera_pos, const glm::mat4& projection) const override;
 
 private:
-    GLuint m_vaoID = 0;          // Vertex array object
-    GLuint m_vboID[2] = {0, 0};  // two VBOs - used for colours and vertex data
-    GLuint ibo = 0;
-    float side_size;
 
-    void init_buffers();
-    void init_shader() const;
+    float side_size;
 
     //CONSTS
     static constexpr int TRI_VERTS = 3;
     static constexpr int NO_TRIS = 12;
-    static constexpr int CUBE_VERTS = 8;
-    static constexpr int CUBE_TRIS = 12;
-    static constexpr int numOfValuesPerVertex = 3;
 
     //UNIT CONSTS
-    float UNIT_SIZE = 1.0f;
-    std::vector<float> UNIT_VERTICES = {
+    static inline float UNIT_SIZE = 1.0f;
+    static inline std::vector<float> UNIT_VERTICES = {
 
         -UNIT_SIZE, -UNIT_SIZE, -UNIT_SIZE,
         -UNIT_SIZE,  UNIT_SIZE, -UNIT_SIZE,
@@ -47,7 +35,7 @@ private:
          UNIT_SIZE,  UNIT_SIZE,  UNIT_SIZE,
          UNIT_SIZE, -UNIT_SIZE,  UNIT_SIZE
     };
-    std::vector<float> UNIT_COLOUR = {
+    static inline std::vector<float> UNIT_COLOUR = {
         0.0, 0.0, 0.0,
         0.0, 1.0, 0.0,
         0.0, 0.0, 1.0,
@@ -58,7 +46,7 @@ private:
         0.0, 0.0, 1.0,
         1.0, 1.0, 0.0,
     };
-    std::vector<unsigned int> UNIT_CONN = {
+    static inline std::vector<unsigned int> UNIT_CONN = {
         0, 1, 2,
         0, 2, 3,
         4, 6, 5,
