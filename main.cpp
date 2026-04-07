@@ -6,7 +6,7 @@
 #include "Scene.h"
 #include "objects/Cube.h"
 
-Scene* scene;
+std::unique_ptr<Scene> scene;
 
 float SCREEN_WIDTH = 500.0;
 float SCREEN_HEIGHT = 350.0;
@@ -19,7 +19,7 @@ void render() {
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutCreateWindow("Test");
 
     glewExperimental = GL_TRUE;
@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
         std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
     }
 
-    scene = new Scene(SCREEN_WIDTH, SCREEN_HEIGHT);
+    scene = std::make_unique<Scene>(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     scene->addObject(std::make_unique<Cube>(glm::vec3(0, 0, -5), 2.0f));
 
