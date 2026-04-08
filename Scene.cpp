@@ -18,6 +18,7 @@
 Scene::Scene(const float screen_width, const float screen_height) {
     this->screen_width = screen_width;
     this->screen_height = screen_height;
+    glutReshapeWindow(screen_width, screen_height);
 
     this->camera_pos = glm::vec3(0.0, 0.0, 0.0);
     this->view_matrix = GlmMaths::pos_to_translation(camera_pos);
@@ -85,11 +86,10 @@ void Scene::rotate(const Axis axis, const float rotation) {
 }
 
 void Scene::update_view() {
-    constexpr auto identity = glm::mat4(1.0f);
-    const glm::mat4 rotation_y_mat = glm::rotate(identity, rotation_y, glm::vec3(1.0f, 0.0f, 0.0f));
-    const glm::mat4 rotation_x_mat = glm::rotate(identity, rotation_x, glm::vec3(0.0f, 1.0f, 0.0f));
-    const glm::mat4 translation = glm::translate(identity, -camera_pos);
-    this->view_matrix = rotation_y_mat * rotation_x_mat * translation;
+    auto view = glm::mat4(1.0f);
+    view = glm::rotate(view, rotation_y, glm::vec3(1.0f, 0.0f, 0.0f));
+    view = glm::rotate(view, rotation_x, glm::vec3(0.0f, 1.0f, 0.0f));
+    this->view_matrix = glm::translate(view, -camera_pos);
 }
 
 void Scene::update() {

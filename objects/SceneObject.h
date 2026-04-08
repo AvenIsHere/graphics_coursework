@@ -5,6 +5,7 @@
 #ifndef GRAPHICS_COURSEWORK_SCENEOBJECT_H
 #define GRAPHICS_COURSEWORK_SCENEOBJECT_H
 
+#include <memory>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
@@ -18,7 +19,7 @@ public:
     virtual ~SceneObject() = default;
     virtual void draw(const glm::mat4& view, const glm::mat4& projection) const = 0;
 
-    Shader *shader;
+    std::unique_ptr<Shader> shader;
     glm::vec3 pos;
     glm::mat4 model_matrix;
 };

@@ -13,8 +13,8 @@ public:
     static inline std::unique_ptr<InputManager> input_manager = nullptr;
 };
 
-float SCREEN_WIDTH = 500.0;
-float SCREEN_HEIGHT = 500.0;
+float SCREEN_WIDTH = 1000.0;
+float SCREEN_HEIGHT = 800.0;
 
 void render() {
     if (Application::scene) {

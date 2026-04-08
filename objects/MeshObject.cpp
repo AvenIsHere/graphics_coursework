@@ -5,10 +5,11 @@
 #include "MeshObject.h"
 
 #include <iostream>
+#include <memory>
 
 MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<unsigned> &indices, const std::string &shader_name) {
 
-    this->shader = new Shader;
+    this->shader = std::make_unique<Shader>();
     if (!shader->load(shader_name, "./glslfiles/basicTransformations.vert", "./glslfiles/basicTransformations.frag"))
     {
         std::cerr << "failed to load shader" << std::endl;
@@ -20,13 +21,7 @@ MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<flo
 MeshObject::~MeshObject() {
     glDeleteBuffers(2, m_vboID);
     glDeleteBuffers(1, &m_iboID);
-
     glDeleteVertexArrays(1, &m_vaoID);
-
-    if (shader != nullptr) {
-        delete shader;
-        shader = nullptr;
-    }
 }
 
 void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<unsigned> &indices) {

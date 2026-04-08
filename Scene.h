@@ -39,7 +39,7 @@ public:
 
     void rotate(Axis axis, float rotation);
 
-    float get_speed() const;
+    [[nodiscard]] float get_speed() const;
 
 private:
     std::vector<std::unique_ptr<SceneObject>> objects;

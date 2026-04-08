@@ -46,17 +46,10 @@ void InputManager::update() const {
     // rotation
     if (keys[GLUT_KEY_LEFT + 256]) scene->rotate(Scene::X, -0.02f);
     if (keys[GLUT_KEY_RIGHT + 256]) scene->rotate(Scene::X, 0.02f);
-    if (keys[GLUT_KEY_UP + 256]) scene->rotate(Scene::Y, -0.02f);
-    if (keys[GLUT_KEY_DOWN + 256]) scene->rotate(Scene::Y, 0.02f);
+    if (keys[GLUT_KEY_UP + 256]) scene->rotate(Scene::Y, -0.013f);
+    if (keys[GLUT_KEY_DOWN + 256]) scene->rotate(Scene::Y, 0.013f);
 
     // exit on esc
     if (keys[27]) glutLeaveMainLoop();
-
-    // add cube
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> loc(1, 40);
-    std::uniform_int_distribution<> siz(1, 6);
-    if (keys['e']) scene->addObject(std::make_unique<Cube>(glm::vec3(loc(gen), loc(gen), loc(gen)), siz(gen)));
 
 }
