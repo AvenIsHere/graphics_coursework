@@ -16,10 +16,12 @@ InputManager::InputManager(Scene *scene) {
 }
 
 void InputManager::handle_input_down(unsigned char key, int x, int y) {
+    key = std::tolower(key);
     keys[key] = true;
 }
 
 void InputManager::handle_input_up(unsigned char key, int x, int y) {
+    key = std::tolower(key);
     keys[key] = false;
 }
 
