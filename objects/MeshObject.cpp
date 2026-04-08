@@ -8,12 +8,7 @@
 #include <memory>
 
 MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<unsigned> &indices, const std::string &shader_name) {
-
-    this->shader = std::make_unique<Shader>();
-    if (!shader->load(shader_name, "./glslfiles/basicTransformations.vert", "./glslfiles/basicTransformations.frag"))
-    {
-        std::cerr << "failed to load shader" << std::endl;
-    }
+    this->shader = get_shader(shader_name);
     indices_size = indices.size();
     init_buffers(vertices, colours, indices);
 }
@@ -57,7 +52,7 @@ void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vec
     glBindVertexArray(0);
 }
 
-void MeshObject::draw(const glm::mat4 &view, const glm::mat4 &projection) const {
+void MeshObject::draw(const glm::mat4 &view, const glm::mat4 &projection, glm::vec4 light_pos) const {
     glUseProgram(shader->handle());
     glBindVertexArray(m_vaoID);
 

@@ -36,6 +36,9 @@ add_executable(graphics_coursework main.cpp
         Utilities/IntersectionTests.cpp
         Obj/OBJLoader.cpp
         Images/ImageLoading.cpp
+        objects/ModelObject.cpp
+        objects/ModelObject.h
+        objects/ModelObject.cpp
 )
 
 target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES} freeimage)

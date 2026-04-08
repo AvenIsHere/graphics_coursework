@@ -1,3 +1,4 @@
+#include <array>
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <glm/glm.hpp>
@@ -6,6 +7,7 @@
 #include "InputManager.h"
 #include "Scene.h"
 #include "objects/Cube.h"
+#include "objects/ModelObject.h"
 
 class Application {
 public:
@@ -63,10 +65,15 @@ int main(int argc, char** argv) {
         std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
     }
 
+    SceneObject::add_shaders({
+        {"BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"}
+    });
+
     Application::scene = std::make_unique<Scene>(SCREEN_WIDTH, SCREEN_HEIGHT);
     Application::input_manager = std::make_unique<InputManager>(Application::scene.get());
 
     Application::scene->addObject(std::make_unique<Cube>(glm::vec3(0, 0, -5), 2.0f));
+    Application::scene->addObject(std::make_unique<ModelObject>("TestModels/axes.obj", "BasicView",glm::vec3(0, 5, 5)));
 
     glutDisplayFunc(render);
 

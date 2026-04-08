@@ -47,6 +47,7 @@ private:
     float rotation_y;
     float speed = 0.1f;
     glm::vec3 camera_pos{};
+    glm::vec4 light_pos{};
     glm::mat4 view_matrix{};
     glm::mat4 proj_matrix{};
 

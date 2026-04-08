@@ -122,7 +122,7 @@ bool COBJLoader::LoadMTLFile(const char* mainName, const char* filename)
 
 	std::string actualPath = fullPath.substr(0, whereDash);
 
-	string s = actualPath + string("\\") + string(filename);
+	string s = actualPath + string("/") + string(filename);
 
 	ifstream fin;
 
@@ -164,7 +164,7 @@ bool COBJLoader::LoadMTLFile(const char* mainName, const char* filename)
 			//cout << "newmtl" <<endl;
 			if (foundNewMaterial)
 			{
-				string s = actualPath + "\\" + newMaterial.m_carrTextureName;
+				string s = actualPath + "/" + newMaterial.m_carrTextureName;
 				newMaterial.m_iGLTextureIndex = CTextureHandler::LookUpTexture(s);
 
 				m_vMats.push_back(newMaterial);
@@ -296,7 +296,7 @@ bool COBJLoader::LoadMTLFile(const char* mainName, const char* filename)
 
 	if (foundNewMaterial)
 	{
-		string s = actualPath + "\\" + newMaterial.m_carrTextureName;
+		string s = actualPath + "/" + newMaterial.m_carrTextureName;
 		newMaterial.m_iGLTextureIndex = CTextureHandler::LookUpTexture(s);
 
 		cout << "MATERIAL " << newMaterial.m_carrTextureName << " " << newMaterial.m_iGLTextureIndex << endl;

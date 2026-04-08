@@ -21,6 +21,7 @@ Scene::Scene(const float screen_width, const float screen_height) {
     glutReshapeWindow(screen_width, screen_height);
 
     this->camera_pos = glm::vec3(0.0, 0.0, 0.0);
+    this->light_pos = glm::vec4(10.0f, 10.0f, 10.0f, 1.0f);
     this->view_matrix = GlmMaths::pos_to_translation(camera_pos);
     this->rotation_x = 0.0;
     this->rotation_y = 0.0;
@@ -31,7 +32,7 @@ void Scene::render() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const auto & object : objects) {
-        object->draw(view_matrix, this->proj_matrix);
+        object->draw(view_matrix, this->proj_matrix, light_pos);
     }
 
     glutSwapBuffers();
