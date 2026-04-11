@@ -66,7 +66,8 @@ int main(int argc, char** argv) {
     }
 
     SceneObject::add_shaders({
-        {"BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"}
+        {"BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"},
+        {"Cube", "glslfiles/basic.vert", "glslfiles/basic.frag"}
     });
 
     Application::scene = std::make_unique<Scene>(SCREEN_WIDTH, SCREEN_HEIGHT);

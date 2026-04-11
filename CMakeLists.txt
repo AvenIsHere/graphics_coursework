@@ -19,7 +19,6 @@ add_executable(graphics_coursework main.cpp
         objects/SceneObject.h
         objects/Cube.cpp
         objects/Cube.h
-        glm_maths.cpp
         glm_maths.h
         Shader.h
         Shader.cpp
@@ -39,6 +38,29 @@ add_executable(graphics_coursework main.cpp
         objects/ModelObject.cpp
         objects/ModelObject.h
         objects/ModelObject.cpp
+        SceneData.cpp
+        SceneData.h
 )
 
 target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES} freeimage)
+
+add_custom_target(copy-files
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/glslfiles"
+        "${CMAKE_CURRENT_BINARY_DIR}/glslfiles"
+)
+
+add_custom_target(copy-files-2
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/TestModels"
+        "${CMAKE_CURRENT_BINARY_DIR}/TestModels"
+)
+
+add_custom_command(
+        TARGET graphics_coursework POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_CURRENT_SOURCE_DIR}/scene_config.json"
+        "${CMAKE_CURRENT_BINARY_DIR}/scene_config.json"
+)
+
+add_dependencies(graphics_coursework copy-files copy-files-2)

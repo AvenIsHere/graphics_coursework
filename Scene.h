@@ -6,7 +6,10 @@
 #define GRAPHICS_COURSEWORK_SCENE_H
 #include <memory>
 #include <vector>
-#include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
+
+#include "SceneData.h"
+using json = nlohmann::json;
 
 #include "objects/SceneObject.h"
 
@@ -37,19 +40,14 @@ public:
     void addObject(std::unique_ptr<SceneObject> obj);
     void move(Direction direction, float amount);
 
-    void rotate(Axis axis, float rotation);
+    void rotate(Axis axis, float given_rotation);
 
     [[nodiscard]] float get_speed() const;
 
 private:
     std::vector<std::unique_ptr<SceneObject>> objects;
-    float rotation_x;
-    float rotation_y;
-    float speed = 0.1f;
-    glm::vec3 camera_pos{};
-    glm::vec4 light_pos{};
-    glm::mat4 view_matrix{};
-    glm::mat4 proj_matrix{};
+
+    SceneData scene_config;
 
     float screen_width;
     float screen_height;
