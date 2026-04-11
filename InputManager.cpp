@@ -5,15 +5,12 @@
 #include "InputManager.h"
 
 #include <random>
-#include <GL/freeglut_std.h>
-#include <GL/freeglut_ext.h>
+#include <utility>
 
 #include "Scene.h"
 #include "objects/Cube.h"
 
-InputManager::InputManager(Scene *scene) {
-    this->scene = scene;
-}
+std::map<int, std::function<void()>> InputManager::functions;
 
 void InputManager::handle_input_down(unsigned char key, int x, int y) {
     key = std::tolower(key);
@@ -33,23 +30,24 @@ void InputManager::handle_input_up(int key, int x, int y) {
     keys[key + 256] = false;
 }
 
-void InputManager::update() const {
+void InputManager::update() {
+    for (const auto&[key, func] : functions) {
+        if (keys[key]) {
+            func();
+        }
+    }
 
-    // movement
-    if (keys['w']) scene->move(Scene::FORWARDS, scene->get_speed());
-    if (keys['s']) scene->move(Scene::BACKWARDS, scene->get_speed());
-    if (keys['a']) scene->move(Scene::LEFT, scene->get_speed());
-    if (keys['d']) scene->move(Scene::RIGHT, scene->get_speed());
-    if (keys[' ']) scene->move(Scene::UP, scene->get_speed());
-    if (keys[GLUT_KEY_SHIFT_L + 256]) scene->move(Scene::DOWN, scene->get_speed());
+}
 
-    // rotation
-    if (keys[GLUT_KEY_LEFT + 256]) scene->rotate(Scene::X, -0.02f);
-    if (keys[GLUT_KEY_RIGHT + 256]) scene->rotate(Scene::X, 0.02f);
-    if (keys[GLUT_KEY_UP + 256]) scene->rotate(Scene::Y, -0.013f);
-    if (keys[GLUT_KEY_DOWN + 256]) scene->rotate(Scene::Y, 0.013f);
+void InputManager::add_to_map(int key, std::function<void()> func, bool special) {
+    if (special) key += 256;
+    functions.emplace(key, func);
+}
 
-    // exit on esc
-    if (keys[27]) glutLeaveMainLoop();
-
+void InputManager::add_mappings(const std::vector<InputMapping>& mappings) {
+    for (const auto& mapping : mappings) {
+        auto [key, func, special] = mapping;
+        if (special) key += 256;
+        functions.emplace(key, func);
+    }
 }

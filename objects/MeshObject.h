@@ -17,7 +17,7 @@ public:
         const std::string& shader_name);
     ~MeshObject() override;
 
-    void draw(const glm::mat4& view, const glm::mat4& projection, glm::vec4 light_pos) const override;
+    void draw(const glm::mat4 & view, const glm::mat4 & projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>> light_data) const override;
 
 protected:
     GLuint m_vaoID = 0;

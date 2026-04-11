@@ -6,17 +6,18 @@
 
 #include <GL/freeglut_std.h>
 
-#include "glm_maths.h"
+#include "GlmMaths.h"
 
 #include <cmath>
 #include <fstream>
 #include <random>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <utility>
 
 #include "objects/Cube.h"
 
-Scene::Scene(const float screen_width, const float screen_height) : scene_config(screen_width, screen_height) {
+Scene::Scene(const float screen_width, const float screen_height, json json_data) : scene_config(screen_width, screen_height, std::move(json_data)) {
     this->screen_width = screen_width;
     this->screen_height = screen_height;
     glutReshapeWindow(screen_width, screen_height);
@@ -26,13 +27,13 @@ void Scene::render() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const auto & object : objects) {
-        object->draw(scene_config.view_matrix, scene_config.proj_matrix, scene_config.light_pos);
+        object->draw(scene_config.view_matrix, scene_config.proj_matrix, scene_config.get_light_data());
     }
 
     glutSwapBuffers();
 }
 
-void Scene::addObject(std::unique_ptr<SceneObject> obj) {
+void Scene::add_object(std::unique_ptr<SceneObject> obj) {
     this->objects.push_back(std::move(obj));
 }
 

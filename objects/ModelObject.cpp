@@ -4,9 +4,12 @@
 
 #include "ModelObject.h"
 
-#include "../glm_maths.h"
+#include <array>
 
-ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position) {
+#include "Cube.h"
+#include "../GlmMaths.h"
+
+ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const std::tuple<std::array<float, 4>, std::array<float, 4>, std::array<float, 4>, float> &material_data) {
 
     this->shader = get_shader(shader_name);
     this->three_d_model_ = std::make_unique<CThreeDModel>();
@@ -23,19 +26,34 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->three_d_model_->CalcCentrePoint();
     this->three_d_model_->CentreOnZero();
     this->three_d_model_->InitVBO(this->shader.get());
+
+    std::tie(this->material_ambient, this->material_diffuse, this->material_specular, this->material_shininess)= material_data;
 }
 
-void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, glm::vec4 light_pos) const {
+void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>> light_data) const {
     glUseProgram(shader->handle());
 
-    glm::mat4 ModelViewMatrix = view * model_matrix;
-    glm::mat3 normal_matrix = glm::transpose(glm::inverse(ModelViewMatrix));
+    glm::mat4 model_view_matrix = view * model_matrix;
+    glm::mat3 normal_matrix = glm::transpose(glm::inverse(model_view_matrix));
 
+    // location
     glUniformMatrix4fv(shader->getProjLocation(), 1, GL_FALSE, &projection[0][0]);
-    glUniformMatrix4fv(shader->getModelViewLocation(), 1, GL_FALSE, &ModelViewMatrix[0][0]);
+    glUniformMatrix4fv(shader->getModelViewLocation(), 1, GL_FALSE, &model_view_matrix[0][0]);
     glUniformMatrix3fv(glGetUniformLocation(shader->handle(), "NormalMatrix"), 1, GL_FALSE, &normal_matrix[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(shader->handle(), "ViewMatrix"), 1, GL_FALSE, &view[0][0]);
+
+    // lighting
+    auto [light_pos, light_ambient_and_diffuse, light_specular] = light_data;
     glUniform4fv(glGetUniformLocation(shader->handle(), "LightPos"), 1, &light_pos[0]);
+    glUniform4fv(glGetUniformLocation(shader->handle(), "light_ambient"), 1, light_ambient_and_diffuse.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "light_diffuse"), 1, light_ambient_and_diffuse.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "light_specular"), 1, light_specular.data());
+
+    // material
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_ambient"), 1, material_ambient.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_diffuse"), 1, material_diffuse.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_specular"), 1, material_specular.data());
+    glUniform1f(glGetUniformLocation(shader->handle(), "material_shininess"), material_shininess);
 
     this->three_d_model_->DrawElementsUsingVBO(this->shader.get());
 }

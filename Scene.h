@@ -30,16 +30,15 @@ public:
         Y,
     };
 
-    Scene(float screen_width, float screen_height);
+    Scene(float screen_width, float screen_height, json json_data);
 
     void update();
     void update_view();
-
     void render() const;
 
-    void addObject(std::unique_ptr<SceneObject> obj);
-    void move(Direction direction, float amount);
+    void add_object(std::unique_ptr<SceneObject> obj);
 
+    void move(Direction direction, float amount);
     void rotate(Axis axis, float given_rotation);
 
     [[nodiscard]] float get_speed() const;

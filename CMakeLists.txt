@@ -19,7 +19,7 @@ add_executable(graphics_coursework main.cpp
         objects/SceneObject.h
         objects/Cube.cpp
         objects/Cube.h
-        glm_maths.h
+        GlmMaths.h
         Shader.h
         Shader.cpp
         objects/MeshObject.cpp

@@ -1,8 +1,12 @@
 #include <array>
+#include <fstream>
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <GL/freeglut_ext.h>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <functional>
+#include <vector>
 
 #include "InputManager.h"
 #include "Scene.h"
@@ -14,9 +18,8 @@ public:
     static inline float SCREEN_WIDTH = 1000.0;
     static inline float SCREEN_HEIGHT = 800.0;
     static inline std::unique_ptr<Scene> scene = nullptr;
-    static inline std::unique_ptr<InputManager> input_manager = nullptr;
 
-    static void init(int argc, char** argv, float screen_width, float screen_height) {
+    static void init(int argc, char** argv, float screen_width, float screen_height, const std::string& scene_config) {
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
         glutCreateWindow("Test");
@@ -28,24 +31,29 @@ public:
 
         glutDisplayFunc(render);
 
-        glutKeyboardFunc(handle_input_down);
-        glutKeyboardUpFunc(handle_input_up);
+        glutKeyboardFunc(InputManager::handle_input_down);
+        glutKeyboardUpFunc(InputManager::handle_input_up);
 
-        glutSpecialFunc(handle_input_down);
-        glutSpecialUpFunc(handle_input_up);
+        glutSpecialFunc(InputManager::handle_input_down);
+        glutSpecialUpFunc(InputManager::handle_input_up);
 
         glutIdleFunc(update);
 
-        scene = std::make_unique<Scene>(screen_width, screen_height);
-        input_manager = std::make_unique<InputManager>(scene.get());
+        scene = std::make_unique<Scene>(screen_width, screen_height, get_json(scene_config));
     }
+
+    static json get_json(const std::string& path) {
+        std::ifstream f(path);
+        return json::parse(f);
+    }
+
     static void run() {
         glutMainLoop();
     }
     static void update() {
-        if (scene && input_manager) {
+        if (scene) {
             scene->update();
-            input_manager->update();
+            InputManager::update();
         }
     }
 
@@ -55,43 +63,45 @@ public:
         }
     }
 
-    static void handle_input_down(unsigned char key, int x, int y) {
-        if (input_manager) {
-            input_manager->handle_input_down(key, x, y);
-        }
-    }
-
-    static void handle_input_down(int key, int x, int y) {
-        if (input_manager) {
-            input_manager->handle_input_down(key, x, y);
-        }
-    }
-
-    static void handle_input_up(unsigned char key, int x, int y) {
-        if (input_manager) {
-            input_manager->handle_input_up(key, x, y);
-        }
-    }
-
-    static void handle_input_up(int key, int x, int y) {
-        if (input_manager) {
-            input_manager->handle_input_up(key, x, y);
-        }
-    }
-
 };
 
 int main(int argc, char** argv) {
 
-    Application::init(argc, argv, Application::SCREEN_WIDTH, Application::SCREEN_HEIGHT);
+    Application::init(argc, argv, Application::SCREEN_WIDTH, Application::SCREEN_HEIGHT, "scene_config.json");
 
     SceneObject::add_shaders({
         {"BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"},
         {"Cube", "glslfiles/basic.vert", "glslfiles/basic.frag"}
     });
 
-    Application::scene->addObject(std::make_unique<Cube>(glm::vec3(0, 0, -5), 2.0f));
-    Application::scene->addObject(std::make_unique<ModelObject>("TestModels/axes.obj", "BasicView",glm::vec3(0, 5, 5)));
+    InputManager::add_mappings({
+        // movement
+        {'w', []{Application::scene->move(Scene::FORWARDS, Application::scene->get_speed());}},
+        {'s', []{Application::scene->move(Scene::BACKWARDS, Application::scene->get_speed());}},
+        {'a', []{Application::scene->move(Scene::LEFT, Application::scene->get_speed());}},
+        {'d', []{Application::scene->move(Scene::RIGHT, Application::scene->get_speed());}},
+        {' ', []{Application::scene->move(Scene::UP, Application::scene->get_speed());}},
+        {GLUT_KEY_SHIFT_L, []{Application::scene->move(Scene::DOWN, Application::scene->get_speed());}, true},
+
+        // rotation
+        {GLUT_KEY_LEFT, []{Application::scene->rotate(Scene::X, -0.02f);}, true},
+        {GLUT_KEY_RIGHT, []{Application::scene->rotate(Scene::X, 0.02f);}, true},
+        {GLUT_KEY_UP, []{Application::scene->rotate(Scene::Y, -0.013f);}, true},
+        {GLUT_KEY_DOWN, []{Application::scene->rotate(Scene::Y, 0.013f);}, true},
+
+        // exit on esc
+        {27, []{glutLeaveMainLoop();}}
+    });
+
+    auto axes_data = std::tuple<std::array<float, 4>, std::array<float, 4>, std::array<float, 4>, float>{
+        {0.1f, 0.1f, 0.1f, 1.0f},
+        {0.8f, 0.8f, 0.5f, 1.0f},
+        {0.9f,0.9f,0.8f,1.0f},
+        50
+    };
+
+    Application::scene->add_object(std::make_unique<Cube>(glm::vec3(0, 0, -5), 2.0f));
+    Application::scene->add_object(std::make_unique<ModelObject>("TestModels/axes.obj", "BasicView",glm::vec3(0, 5, 5), axes_data));
 
     Application::run();
 

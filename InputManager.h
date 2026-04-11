@@ -7,24 +7,31 @@
 #include "Scene.h"
 
 
+struct InputMapping {
+    int key;
+    std::function<void()> function;
+    bool special = false;
+};
+
 class InputManager {
 
-    bool keys[512] = { false };
-    Scene* scene;
+    static inline bool keys[512] = { false };
+    static std::map<int, std::function<void()>> functions;
 
 public:
 
-    InputManager(Scene* scene);
-
     //handle ASCII input
-    void handle_input_down(unsigned char key, int x, int y);
-    void handle_input_up(unsigned char key, int x, int y);
+    static void handle_input_down(unsigned char key, int x, int y);
+    static void handle_input_up(unsigned char key, int x, int y);
 
     //handle special character input
-    void handle_input_down(int key, int x, int y);
-    void handle_input_up(int key, int x, int y);
+    static void handle_input_down(int key, int x, int y);
+    static void handle_input_up(int key, int x, int y);
 
-    void update() const;
+    static void update();
+
+    static void add_to_map(int key, std::function<void()> func, bool special=false);
+    static void add_mappings(const std::vector<InputMapping>& mappings);
 };
 
 
