@@ -8,10 +8,17 @@
 #include <iostream>
 #include <vector>
 
-std::unordered_map<std::string, std::array<std::string, 2>> SceneObject::shaders;
+#include "../Scene.h"
+
+std::unordered_map<std::string, std::shared_ptr<Shader>> SceneObject::shaders;
+std::unordered_map<std::string, std::shared_ptr<SceneObject::MaterialData>> SceneObject::materials;
 
 void SceneObject::add_shader(const std::string& name, const std::string &vert_path, const std::string &frag_path) {
-    shaders.emplace(name, std::array<std::string, 2>({vert_path, frag_path}));
+    auto shader = std::make_shared<Shader>();
+    if (!shader->load(name, vert_path.c_str(), frag_path.c_str())) {
+        std::cerr << "Failed to load shader" << std::endl;
+    }
+    shaders.emplace(name, shader);
 }
 
 void SceneObject::add_shaders(const std::vector<std::array<std::string, 3>>& given_array) {
@@ -20,10 +27,23 @@ void SceneObject::add_shaders(const std::vector<std::array<std::string, 3>>& giv
     }
 }
 
-std::unique_ptr<Shader> SceneObject::get_shader(const std::string &name) {
-    auto return_shader = std::make_unique<Shader>();
-    if (!return_shader->load(name, shaders.at(name)[0].c_str(), shaders.at(name)[1].c_str())) {
-        std::cerr << "Failed to load shader" << std::endl;
-    }
-    return return_shader;
+std::shared_ptr<Shader> SceneObject::get_shader(const std::string &name) {
+    return shaders.at(name);
 }
+
+void SceneObject::add_material(const std::string &name, MaterialData material) {
+    materials.emplace(name, std::make_shared<MaterialData>(material));
+}
+
+void SceneObject::add_materials(const std::vector<std::tuple<std::string, MaterialData>>& materials) {
+    for (const auto& material : materials) {
+        auto [name, mat] = material;
+        add_material(name, mat);
+    }
+}
+
+std::shared_ptr<SceneObject::MaterialData> SceneObject::get_material(const std::string &name) {
+    return materials.at(name);
+}
+
+

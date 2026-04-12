@@ -74,6 +74,13 @@ int main(int argc, char** argv) {
         {"Cube", "glslfiles/basic.vert", "glslfiles/basic.frag"}
     });
 
+    SceneObject::add_materials({
+            {"axes", {{0.1f, 0.1f, 0.1f, 1.0f},
+            {0.8f, 0.8f, 0.5f, 1.0f},
+            {0.9f, 0.9f, 0.8f, 1.0f},
+                50}}
+    });
+
     InputManager::add_mappings({
         // movement
         {'w', []{Application::scene->move(Scene::FORWARDS, Application::scene->get_speed());}},
@@ -93,16 +100,11 @@ int main(int argc, char** argv) {
         {27, []{glutLeaveMainLoop();}}
     });
 
-    auto axes_material_data = std::tuple<std::array<float, 4>, std::array<float, 4>, std::array<float, 4>, float>{
-        {0.1f, 0.1f, 0.1f, 1.0f},
-        {0.8f, 0.8f, 0.5f, 1.0f},
-        {0.9f, 0.9f, 0.8f, 1.0f},
-        50
-    };
+
 
     Application::scene->add_object(std::make_unique<Cube>(glm::vec3(0, 0, -5), 2.0f));
-    Application::scene->add_object(std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView",glm::vec3(0, 0, 5), axes_material_data));
-    Application::scene->add_object(std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView",glm::vec3(0, 100, 5), axes_material_data));
+    Application::scene->add_object(std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView",glm::vec3(0, 0, 5), "axes"));
+    Application::scene->add_object(std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView",glm::vec3(0, 100, 5), "axes"));
 
     Application::run();
 

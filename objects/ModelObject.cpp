@@ -10,7 +10,7 @@
 
 #include "../GlmMaths.h"
 
-ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const std::tuple<std::array<float, 4>, std::array<float, 4>, std::array<float, 4>, float> &material_data) {
+ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const std::string& material_name) {
 
     this->shader = get_shader(shader_name);
     this->three_d_model_ = std::make_unique<CThreeDModel>();
@@ -28,7 +28,7 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->three_d_model_->CentreOnZero();
     this->three_d_model_->InitVBO(this->shader.get());
 
-    std::tie(this->material_ambient, this->material_diffuse, this->material_specular, this->material_shininess)= material_data;
+    this->material = get_material(material_name);
 }
 
 void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>> light_data) const {
@@ -50,12 +50,11 @@ void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, std::
     glUniform4fv(glGetUniformLocation(shader->handle(), "light_ambient"), 1, light_ambient.data());
     glUniform4fv(glGetUniformLocation(shader->handle(), "light_diffuse"), 1, light_diffuse.data());
     glUniform4fv(glGetUniformLocation(shader->handle(), "light_specular"), 1, light_specular.data());
-
     // material
-    glUniform4fv(glGetUniformLocation(shader->handle(), "material_ambient"), 1, material_ambient.data());
-    glUniform4fv(glGetUniformLocation(shader->handle(), "material_diffuse"), 1, material_diffuse.data());
-    glUniform4fv(glGetUniformLocation(shader->handle(), "material_specular"), 1, material_specular.data());
-    glUniform1f(glGetUniformLocation(shader->handle(), "material_shininess"), material_shininess);
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_ambient"), 1, material->material_ambient.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_diffuse"), 1, material->material_diffuse.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_specular"), 1, material->material_specular.data());
+    glUniform1f(glGetUniformLocation(shader->handle(), "material_shininess"), material->material_shininess);
 
     this->three_d_model_->DrawElementsUsingVBO(this->shader.get());
 }
