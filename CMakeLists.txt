@@ -17,8 +17,8 @@ add_executable(graphics_coursework main.cpp
         Scene.h
         objects/SceneObject.cpp
         objects/SceneObject.h
-        objects/Cube.cpp
-        objects/Cube.h
+        objects/Cuboid.cpp
+        objects/Cuboid.h
         GlmMaths.h
         Shader.h
         Shader.cpp

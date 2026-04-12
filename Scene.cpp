@@ -15,7 +15,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <utility>
 
-#include "objects/Cube.h"
+#include "objects/Cuboid.h"
 
 Scene::Scene(const float screen_width, const float screen_height, json json_data) : scene_config(screen_width, screen_height, std::move(json_data)) {
     this->screen_width = screen_width;

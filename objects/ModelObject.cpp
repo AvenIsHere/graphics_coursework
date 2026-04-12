@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "Cube.h"
+#include "Cuboid.h"
 
 #include "../GlmMaths.h"
 

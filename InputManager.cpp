@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "Scene.h"
-#include "objects/Cube.h"
+#include "objects/Cuboid.h"
 
 std::map<int, std::function<void()>> InputManager::functions;
 

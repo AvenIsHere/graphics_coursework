@@ -10,7 +10,7 @@
 
 #include "InputManager.h"
 #include "Scene.h"
-#include "objects/Cube.h"
+#include "objects/Cuboid.h"
 #include "objects/ModelObject.h"
 
 class Application {
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 
     SceneObject::add_shaders({
         {"BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"},
-        {"Cube", "glslfiles/basic.vert", "glslfiles/basic.frag"}
+        {"Cuboid", "glslfiles/basic.vert", "glslfiles/basic.frag"}
     });
 
     SceneObject::add_materials({
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
     });
 
     Application::scene->add_objects(
-        std::make_unique<Cube>(glm::vec3(0, 0, -5), 2.0f, "BasicView", "axes")
+        std::make_unique<Cuboid>(glm::vec3(0, 0, -5), glm::vec3(1.0, 5.0, 1.0), "BasicView", "axes")
     );
 
     Application::run();

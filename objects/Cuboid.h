@@ -9,13 +9,13 @@
 #include "MeshObject.h"
 
 
-class Cube : public MeshObject {
+class Cuboid : public MeshObject {
 public:
-    explicit Cube(glm::vec3 pos_vec, float side_size, const std::string& shader_name, const std::string& material_name);
+    explicit Cuboid(glm::vec3 pos_vec, glm::vec3 dimensions, const std::string& shader_name, const std::string& material_name);
 
 private:
 
-    float side_size;
+    glm::vec3 dimensions{};
 
     //CONSTS
     static constexpr int TRI_VERTS = 3;
