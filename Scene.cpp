@@ -27,7 +27,7 @@ void Scene::render() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const auto & object : objects) {
-        object->draw(scene_config.view_matrix, scene_config.proj_matrix, scene_config.get_light_data());
+        object->draw(scene_config.view_matrix, scene_config.proj_matrix, scene_config.light);
     }
 
     glutSwapBuffers();

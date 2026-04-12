@@ -14,9 +14,15 @@ using json = nlohmann::json;
 class SceneData {
     json json_data;
 public:
-    SceneData(float screen_width, float screen_height, json json_data);
 
-    std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>> get_light_data() const;
+    struct Light {
+        glm::vec4 pos;
+        std::array<float, 4> ambient;
+        std::array<float, 4> diffuse;
+        std::array<float, 4> specular;
+    };
+
+    SceneData(float screen_width, float screen_height, json json_data);
 
     // camera
     float speed;
@@ -25,11 +31,7 @@ public:
     glm::mat4 view_matrix{};
     glm::mat4 proj_matrix{};
 
-    // lighting
-    glm::vec4 light_pos{};
-    std::array<float, 4> light_ambient{};
-    std::array<float, 4> light_diffuse{};
-    std::array<float, 4> light_specular{};
+    Light light{};
 };
 
 

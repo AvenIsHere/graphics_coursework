@@ -46,4 +46,27 @@ std::shared_ptr<SceneObject::MaterialData> SceneObject::get_material(const std::
     return materials.at(name);
 }
 
+void SceneObject::handle_lighting(const glm::mat4 & view, SceneData::Light light) const {
+    light.pos = view * light.pos;
+    glUniform4fv(glGetUniformLocation(shader->handle(), "LightPos"), 1, &light.pos[0]);
+    glUniform4fv(glGetUniformLocation(shader->handle(), "light_ambient"), 1, light.ambient.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "light_diffuse"), 1, light.diffuse.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "light_specular"), 1, light.specular.data());
+}
+
+void SceneObject::handle_material() const {
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_ambient"), 1, material->material_ambient.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_diffuse"), 1, material->material_diffuse.data());
+    glUniform4fv(glGetUniformLocation(shader->handle(), "material_specular"), 1, material->material_specular.data());
+    glUniform1f(glGetUniformLocation(shader->handle(), "material_shininess"), material->material_shininess);
+}
+
+void SceneObject::handle_location(const glm::mat4 & view, const glm::mat4 & projection) const {
+    glm::mat4 model_view_matrix = view * model_matrix;
+    glm::mat3 normal_matrix = glm::transpose(glm::inverse(model_view_matrix));
+    glUniformMatrix4fv(shader->getProjLocation(), 1, GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(shader->getModelViewLocation(), 1, GL_FALSE, &model_view_matrix[0][0]);
+    glUniformMatrix3fv(glGetUniformLocation(shader->handle(), "NormalMatrix"), 1, GL_FALSE, &normal_matrix[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(shader->handle(), "ViewMatrix"), 1, GL_FALSE, &view[0][0]);
+}
 

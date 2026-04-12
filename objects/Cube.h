@@ -11,7 +11,7 @@
 
 class Cube : public MeshObject {
 public:
-    explicit Cube(glm::vec3 pos_vec, float side_size);
+    explicit Cube(glm::vec3 pos_vec, float side_size, const std::string& shader_name, const std::string& material_name);
 
 private:
 
@@ -46,6 +46,7 @@ private:
         0.0, 0.0, 1.0,
         1.0, 1.0, 0.0,
     };
+    static inline std::vector<float> UNIT_NORMALS = UNIT_VERTICES;
     static inline std::vector<unsigned int> UNIT_CONN = {
         0, 1, 2,
         0, 2, 3,

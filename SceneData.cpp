@@ -8,9 +8,6 @@
 
 #include "GlmMaths.h"
 
-std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>> SceneData::get_light_data() const {
-    return {light_pos, light_ambient, light_diffuse, light_specular};
-}
 
 SceneData::SceneData(float screen_width, float screen_height, json json_data) {
 
@@ -29,15 +26,16 @@ SceneData::SceneData(float screen_width, float screen_height, json json_data) {
     view_matrix = GlmMaths::pos_to_translation(camera_pos);
     proj_matrix = glm::perspective(glm::radians(45.0f), screen_width / screen_height, 0.1f, 100.0f);
 
+
     // lighting
-    light_pos = glm::vec4(
+    light.pos = glm::vec4(
         json_data["light-pos"]["x"],
         json_data["light-pos"]["y"],
         json_data["light-pos"]["z"],
         json_data["light-pos"]["w"]);
     for (int i = 0; i < 4; i++) {
-        light_ambient[i] = json_data["light-ambient"][i];
-        light_diffuse[i] = json_data["light-diffuse"][i];
-        light_specular[i] = json_data["light-specular"][i];
+        light.ambient[i] = json_data["light-ambient"][i];
+        light.diffuse[i] = json_data["light-diffuse"][i];
+        light.specular[i] = json_data["light-specular"][i];
     }
 }

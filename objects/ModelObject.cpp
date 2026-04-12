@@ -31,30 +31,13 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->material = get_material(material_name);
 }
 
-void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>> light_data) const {
+void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, SceneData::Light light_data) const {
     glUseProgram(shader->handle());
+    glUniform1i(glGetUniformLocation(shader->handle(), "useTexture"), true);
 
-    glm::mat4 model_view_matrix = view * model_matrix;
-    glm::mat3 normal_matrix = glm::transpose(glm::inverse(model_view_matrix));
-
-    // location
-    glUniformMatrix4fv(shader->getProjLocation(), 1, GL_FALSE, &projection[0][0]);
-    glUniformMatrix4fv(shader->getModelViewLocation(), 1, GL_FALSE, &model_view_matrix[0][0]);
-    glUniformMatrix3fv(glGetUniformLocation(shader->handle(), "NormalMatrix"), 1, GL_FALSE, &normal_matrix[0][0]);
-    glUniformMatrix4fv(glGetUniformLocation(shader->handle(), "ViewMatrix"), 1, GL_FALSE, &view[0][0]);
-
-    // lighting
-    auto [light_pos, light_ambient, light_diffuse, light_specular] = light_data;
-    light_pos = view * light_pos;
-    glUniform4fv(glGetUniformLocation(shader->handle(), "LightPos"), 1, &light_pos[0]);
-    glUniform4fv(glGetUniformLocation(shader->handle(), "light_ambient"), 1, light_ambient.data());
-    glUniform4fv(glGetUniformLocation(shader->handle(), "light_diffuse"), 1, light_diffuse.data());
-    glUniform4fv(glGetUniformLocation(shader->handle(), "light_specular"), 1, light_specular.data());
-    // material
-    glUniform4fv(glGetUniformLocation(shader->handle(), "material_ambient"), 1, material->material_ambient.data());
-    glUniform4fv(glGetUniformLocation(shader->handle(), "material_diffuse"), 1, material->material_diffuse.data());
-    glUniform4fv(glGetUniformLocation(shader->handle(), "material_specular"), 1, material->material_specular.data());
-    glUniform1f(glGetUniformLocation(shader->handle(), "material_shininess"), material->material_shininess);
+    handle_location(view, projection);
+    handle_lighting(view, light_data);
+    handle_material();
 
     this->three_d_model_->DrawElementsUsingVBO(this->shader.get());
 }

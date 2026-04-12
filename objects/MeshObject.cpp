@@ -4,13 +4,13 @@
 
 #include "MeshObject.h"
 
-#include <array>
 #include <memory>
 
-MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<unsigned> &indices, const std::string &shader_name) {
+MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<float>& normals, const std::vector<unsigned> &indices, const std::string &shader_name, const std::string& material_name) {
     this->shader = get_shader(shader_name);
+    this-> material = get_material(material_name);
     indices_size = indices.size();
-    init_buffers(vertices, colours, indices);
+    init_buffers(vertices, colours, normals, indices);
 }
 
 MeshObject::~MeshObject() {
@@ -19,29 +19,34 @@ MeshObject::~MeshObject() {
     glDeleteVertexArrays(1, &m_vaoID);
 }
 
-void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<unsigned> &indices) {
+void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<float>& normals, const std::vector<unsigned> &indices) {
     // VAO allocation
     glGenVertexArrays(1, &m_vaoID);
 
     // First VAO setup
     glBindVertexArray(m_vaoID);
 
-    glGenBuffers(2, m_vboID);
+    glGenBuffers(3, m_vboID);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID[0]);
     //initialises data storage of vertex buffer object
     glBufferData(GL_ARRAY_BUFFER, vertices.size() *sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
-    const GLint vertexLocation= glGetAttribLocation(shader->handle(), "in_Position");
-    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-    glEnableVertexAttribArray(vertexLocation);
+    const GLint vertex_location = glGetAttribLocation(shader->handle(), "in_Position");
+    glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(vertex_location);
 
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID[1]);
     glBufferData(GL_ARRAY_BUFFER, colours.size() *sizeof(GLfloat), colours.data(), GL_STATIC_DRAW);
-    const GLint colorLocation= glGetAttribLocation(shader->handle(), "in_Color");
-    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-    glEnableVertexAttribArray(colorLocation);
+    const GLint color_location = glGetAttribLocation(shader->handle(), "in_Color");
+    glVertexAttribPointer(color_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(color_location);
 
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID[2]);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() *sizeof(GLfloat), normals.data(), GL_STATIC_DRAW);
+    const GLint normal_location = glGetAttribLocation(shader->handle(), "in_Normal");
+    glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(normal_location);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -52,15 +57,14 @@ void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vec
     glBindVertexArray(0);
 }
 
-void MeshObject::draw(const glm::mat4 & view, const glm::mat4 & projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>>
-                      light_data) const {
+void MeshObject::draw(const glm::mat4 & view, const glm::mat4 & projection, SceneData::Light light_data) const {
     glUseProgram(shader->handle());
     glBindVertexArray(m_vaoID);
+    glUniform1i(glGetUniformLocation(shader->handle(), "useTexture"), false);
 
-    glm::mat4 model_view_matrix = view * this->model_matrix;
-
-    glUniformMatrix4fv(this->shader->getProjLocation(), 1, GL_FALSE, &projection[0][0]);
-    glUniformMatrix4fv(this->shader->getModelViewLocation(), 1, GL_FALSE, &model_view_matrix[0][0]);
+    handle_location(view, projection);
+    handle_lighting(view, light_data);
+    handle_material();
 
     glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, nullptr);
 

@@ -37,6 +37,10 @@ public:
     void render() const;
 
     void add_object(std::unique_ptr<SceneObject> obj);
+    template<typename... Args>
+    void add_objects(Args&&... object) {
+        (add_object(std::forward<Args>(object)), ...);
+    }
 
     void move(Direction direction, float amount);
     void rotate(Axis axis, float given_rotation);

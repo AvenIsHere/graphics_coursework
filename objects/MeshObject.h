@@ -13,22 +13,24 @@ class MeshObject : public SceneObject {
 public:
     MeshObject(const std::vector<float>& vertices,
         const std::vector<float>& colours,
+        const std::vector<float>& normals,
         const std::vector<unsigned int>& indices,
-        const std::string& shader_name);
+        const std::string& shader_name,
+        const std::string& material_name);
     ~MeshObject() override;
 
-    void draw(const glm::mat4 & view, const glm::mat4 & projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>>
-              light_data) const override;
+    void draw(const glm::mat4 & view, const glm::mat4 & projection, SceneData::Light light_data) const override;
 
 protected:
     GLuint m_vaoID = 0;
-    GLuint m_vboID[2] = {0, 0};
+    GLuint m_vboID[3] = {0, 0, 0};
     GLuint m_iboID = 0;
 
     size_t indices_size;
 
     void init_buffers(const std::vector<float>& vertices,
         const std::vector<float>& colours,
+        const std::vector<float>& normals,
         const std::vector<unsigned int>& indices);
 };
 
