@@ -26,5 +26,5 @@ void main(void)
 
 	ex_PositionEye = vec3((ModelViewMatrix * vec4(in_Position, 1.0)));
 
-	ex_LightDir = vec3(ViewMatrix * LightPos);
+	ex_LightDir = normalize(vec3(LightPos) - ex_PositionEye);
 }

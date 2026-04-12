@@ -21,7 +21,8 @@ class ModelObject : public SceneObject {
 
 public:
     explicit ModelObject(const std::string &model_path, const std::string &shader_name, glm::vec3 position, const std::tuple<std::array<float, 4>, std::array<float, 4>, std::array<float, 4>, float> &material_data);
-    void draw(const glm::mat4 & view, const glm::mat4 & projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>> light_data) const override;
+    void draw(const glm::mat4 & view, const glm::mat4 & projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>>
+              light_data) const override;
 };
 
 

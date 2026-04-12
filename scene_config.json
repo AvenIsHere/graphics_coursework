@@ -16,6 +16,7 @@
     "z": 10.0,
     "w": 1.0
   },
-  "light-ambient-and-diffuse": [0.8, 0.8, 0.6, 1.0],
+  "light-ambient": [0.8, 0.8, 0.6, 1.0],
+  "light-diffuse": [0.8, 0.8, 0.6, 1.0],
   "light-specular": [1.0, 1.0, 1.0, 1.0]
 }

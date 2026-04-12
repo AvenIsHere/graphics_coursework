@@ -52,7 +52,8 @@ void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vec
     glBindVertexArray(0);
 }
 
-void MeshObject::draw(const glm::mat4 & view, const glm::mat4 & projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>> light_data) const {
+void MeshObject::draw(const glm::mat4 & view, const glm::mat4 & projection, std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>>
+                      light_data) const {
     glUseProgram(shader->handle());
     glBindVertexArray(m_vaoID);
 

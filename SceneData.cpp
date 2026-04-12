@@ -8,8 +8,8 @@
 
 #include "GlmMaths.h"
 
-std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>> SceneData::get_light_data() const {
-    return {light_pos, light_ambient_and_diffuse, light_specular};
+std::tuple<glm::vec4, std::array<float, 4>, std::array<float, 4>, std::array<float, 4>> SceneData::get_light_data() const {
+    return {light_pos, light_ambient, light_diffuse, light_specular};
 }
 
 SceneData::SceneData(float screen_width, float screen_height, json json_data) {
@@ -36,9 +36,8 @@ SceneData::SceneData(float screen_width, float screen_height, json json_data) {
         json_data["light-pos"]["z"],
         json_data["light-pos"]["w"]);
     for (int i = 0; i < 4; i++) {
-        light_ambient_and_diffuse[i] = json_data["light-ambient-and-diffuse"][i];
-    }
-    for (int i = 0; i < 4; i++) {
+        light_ambient[i] = json_data["light-ambient"][i];
+        light_diffuse[i] = json_data["light-diffuse"][i];
         light_specular[i] = json_data["light-specular"][i];
     }
 }
