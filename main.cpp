@@ -99,14 +99,14 @@ int main(int argc, char** argv) {
             {0.1f, 0.08f, 0.05f, 1.0f},
                 5}},
         {"model", {{0.1f, 0.1f, 0.1f, 1.0f},
-            {0.8f, 0.8f, 0.5f, 1.0f},
+            {0.8f, 0.8f, 0.5f, 0.1f},
             {0.9f, 0.9f, 0.8f, 1.0f},
             50}}
     });
 
     Application::scene->add_objects(
         std::make_unique<Cuboid>(glm::vec3(0, -5, -5), glm::vec3(20.0, 0.5, 20.0), "BasicView", "wood"),
-        std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView", glm::vec3(20, 20, 20), "model")
+        std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView", glm::vec3(20, -20, 20), "model")
     );
 
     Application::run();

@@ -39,19 +39,16 @@ void Scene::add_object(std::unique_ptr<SceneObject> obj) {
 
 void Scene::move(const Direction direction, float amount) {
 
-    float x_dir = std::sin(scene_config.rotation["x"]) * std::cos(scene_config.rotation["y"]);
-    float y_dir = -std::sin(scene_config.rotation["y"]);
-    float z_dir = -std::cos(scene_config.rotation["x"]) * std::cos(scene_config.rotation["y"]);
+    float x_dir = std::sin(scene_config.rotation["x"]);
+    float z_dir = -std::cos(scene_config.rotation["x"]);
 
     switch (direction) {
         case FORWARDS:
             scene_config.camera_pos.x += x_dir * amount;
-            scene_config.camera_pos.y += y_dir * amount;
             scene_config.camera_pos.z += z_dir * amount;
             break;
         case BACKWARDS:
             scene_config.camera_pos.x -= x_dir * amount;
-            scene_config.camera_pos.y -= y_dir * amount;
             scene_config.camera_pos.z -= z_dir * amount;
             break;
         case LEFT:
