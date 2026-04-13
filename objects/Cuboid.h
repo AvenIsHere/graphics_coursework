@@ -35,17 +35,6 @@ private:
          UNIT_SIZE,  UNIT_SIZE,  UNIT_SIZE,
          UNIT_SIZE, -UNIT_SIZE,  UNIT_SIZE
     };
-    static inline std::vector<float> UNIT_COLOUR = {
-        0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 0.0, 1.0,
-        1.0, 1.0, 1.0,
-
-        1.0, 0.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 0.0, 1.0,
-        1.0, 1.0, 0.0,
-    };
     static inline std::vector<float> UNIT_NORMALS = UNIT_VERTICES;
     static inline std::vector<unsigned int> UNIT_CONN = {
         0, 1, 2,

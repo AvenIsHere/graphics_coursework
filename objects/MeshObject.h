@@ -12,7 +12,6 @@
 class MeshObject : public SceneObject {
 public:
     MeshObject(const std::vector<float>& vertices,
-        const std::vector<float>& colours,
         const std::vector<float>& normals,
         const std::vector<unsigned int>& indices,
         const std::string& shader_name,
@@ -29,7 +28,6 @@ protected:
     size_t indices_size;
 
     void init_buffers(const std::vector<float>& vertices,
-        const std::vector<float>& colours,
         const std::vector<float>& normals,
         const std::vector<unsigned int>& indices);
 };

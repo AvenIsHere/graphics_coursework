@@ -6,11 +6,11 @@
 
 #include <memory>
 
-MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<float>& normals, const std::vector<unsigned> &indices, const std::string &shader_name, const std::string& material_name) {
+MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<float>& normals, const std::vector<unsigned> &indices, const std::string &shader_name, const std::string& material_name) {
     this->shader = get_shader(shader_name);
     this-> material = get_material(material_name);
     indices_size = indices.size();
-    init_buffers(vertices, colours, normals, indices);
+    init_buffers(vertices, normals, indices);
 }
 
 MeshObject::~MeshObject() {
@@ -19,7 +19,7 @@ MeshObject::~MeshObject() {
     glDeleteVertexArrays(1, &m_vaoID);
 }
 
-void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vector<float> &colours, const std::vector<float>& normals, const std::vector<unsigned> &indices) {
+void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vector<float>& normals, const std::vector<unsigned> &indices) {
     // VAO allocation
     glGenVertexArrays(1, &m_vaoID);
 
@@ -34,13 +34,6 @@ void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vec
     const GLint vertex_location = glGetAttribLocation(shader->handle(), "in_Position");
     glVertexAttribPointer(vertex_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(vertex_location);
-
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboID[1]);
-    glBufferData(GL_ARRAY_BUFFER, colours.size() *sizeof(GLfloat), colours.data(), GL_STATIC_DRAW);
-    const GLint color_location = glGetAttribLocation(shader->handle(), "in_Color");
-    glVertexAttribPointer(color_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-    glEnableVertexAttribArray(color_location);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID[2]);
     glBufferData(GL_ARRAY_BUFFER, normals.size() *sizeof(GLfloat), normals.data(), GL_STATIC_DRAW);

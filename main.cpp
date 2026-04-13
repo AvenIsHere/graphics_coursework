@@ -94,14 +94,19 @@ int main(int argc, char** argv) {
     });
 
     SceneObject::add_materials({
-            {"axes", {{0.1f, 0.1f, 0.1f, 1.0f},
+            {"wood", {{0.15f, 0.1f, 0.05f, 1.0f},
+            {0.45f, 0.25f, 0.1f, 1.0f},
+            {0.1f, 0.08f, 0.05f, 1.0f},
+                5}},
+        {"model", {{0.1f, 0.1f, 0.1f, 1.0f},
             {0.8f, 0.8f, 0.5f, 1.0f},
             {0.9f, 0.9f, 0.8f, 1.0f},
-                50}}
+            50}}
     });
 
     Application::scene->add_objects(
-        std::make_unique<Cuboid>(glm::vec3(0, 0, -5), glm::vec3(1.0, 5.0, 1.0), "BasicView", "axes")
+        std::make_unique<Cuboid>(glm::vec3(0, -5, -5), glm::vec3(20.0, 0.5, 20.0), "BasicView", "wood"),
+        std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView", glm::vec3(20, 20, 20), "model")
     );
 
     Application::run();
