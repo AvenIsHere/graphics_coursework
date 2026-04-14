@@ -89,24 +89,31 @@ int main(int argc, char** argv) {
     });
 
     SceneObject::add_shaders({
-        {"BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"},
-        {"Cuboid", "glslfiles/basic.vert", "glslfiles/basic.frag"}
+        {"BasicView", "glsl_files/basicTransformations.vert", "glsl_files/basicTransformations.frag"},
+        {"Cuboid", "glsl_files/basic.vert", "glsl_files/basic.frag"}
     });
 
     SceneObject::add_materials({
-            {"wood", {{0.15f, 0.1f, 0.05f, 1.0f},
-            {0.45f, 0.25f, 0.1f, 1.0f},
-            {0.1f, 0.08f, 0.05f, 1.0f},
-                5}},
+        {"sky", {
+        {1.0f, 1.0f, 1.0f, 1.0f},
+        {0.529f, 0.808f, 0.922f, 1.0f},
+        {0.1f, 0.08f, 0.05f, 1.0f},
+        5}},
+        {"wood", {{0.15f, 0.1f, 0.05f, 1.0f},
+        {0.45f, 0.25f, 0.1f, 1.0f},
+        {0.1f, 0.08f, 0.05f, 1.0f},
+            5}},
         {"model", {{0.1f, 0.1f, 0.1f, 1.0f},
-            {0.8f, 0.8f, 0.5f, 0.1f},
-            {0.9f, 0.9f, 0.8f, 1.0f},
-            50}}
+        {0.8f, 0.8f, 0.5f, 0.1f},
+        {0.9f, 0.9f, 0.8f, 1.0f},
+        50}}
     });
 
     Application::scene->add_objects(
+        std::make_unique<Cuboid>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(500, 500, 500), "BasicView", "sky"),
         std::make_unique<Cuboid>(glm::vec3(0, -5, -5), glm::vec3(20.0, 0.5, 20.0), "BasicView", "wood"),
-        std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView", glm::vec3(20, -20, 20), "model")
+        std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView", glm::vec3(20, -20, 20), glm::vec3(1,1,1), "model"),
+        std::make_unique<ModelObject>("TestModels/box.obj", "BasicView", glm::vec3(1,2,3), glm::vec3(1, 5, 1), "model")
     );
 
     Application::run();

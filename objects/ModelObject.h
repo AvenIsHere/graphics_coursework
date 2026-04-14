@@ -15,7 +15,7 @@ class ModelObject : public SceneObject {
     std::unique_ptr<CThreeDModel> three_d_model_;
 
 public:
-    explicit ModelObject(const std::string &model_path, const std::string &shader_name, glm::vec3 position, const std::string& material_name);
+    explicit ModelObject(const std::string &model_path, const std::string &shader_name, glm::vec3 position, glm::vec3 dimensions, const std::string& material_name);
     void draw(const glm::mat4 & view, const glm::mat4 & projection, SceneData::Light light_data) const override;
 };
 

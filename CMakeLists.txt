@@ -46,8 +46,8 @@ target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::gl
 
 add_custom_target(copy-files
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_SOURCE_DIR}/glslfiles"
-        "${CMAKE_CURRENT_BINARY_DIR}/glslfiles"
+        "${CMAKE_CURRENT_SOURCE_DIR}/glsl_files"
+        "${CMAKE_CURRENT_BINARY_DIR}/glsl_files"
 )
 
 add_custom_target(copy-files-2

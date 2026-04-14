@@ -24,7 +24,7 @@ SceneData::SceneData(float screen_width, float screen_height, json json_data) {
     };
     speed = json_data["camera-speed"];
     view_matrix = GlmMaths::pos_to_translation(camera_pos);
-    proj_matrix = glm::perspective(glm::radians(45.0f), screen_width / screen_height, 0.1f, 100.0f);
+    proj_matrix = glm::perspective(glm::radians(45.0f), screen_width / screen_height, 0.1f, 1000.0f);
 
 
     // lighting

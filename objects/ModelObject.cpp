@@ -10,12 +10,13 @@
 
 #include "../GlmMaths.h"
 
-ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const std::string& material_name) {
+ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const glm::vec3 dimensions, const std::string& material_name) {
 
     this->shader = get_shader(shader_name);
     this->three_d_model_ = std::make_unique<CThreeDModel>();
 
     this->model_matrix = GlmMaths::pos_to_translation(position);
+    this->model_matrix = glm::scale(model_matrix, dimensions);
 
     const auto c_obj_loader = std::make_unique<COBJLoader>();
     if (!c_obj_loader->LoadModel(model_path)) {
