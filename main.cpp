@@ -95,25 +95,24 @@ int main(int argc, char** argv) {
 
     SceneObject::add_materials({
         {"sky", {
-        {1.0f, 1.0f, 1.0f, 1.0f},
+        {0.529f, 0.808f, 0.922f, 1.0f},
         {0.529f, 0.808f, 0.922f, 1.0f},
         {0.1f, 0.08f, 0.05f, 1.0f},
-        5}},
-        {"wood", {{0.15f, 0.1f, 0.05f, 1.0f},
-        {0.45f, 0.25f, 0.1f, 1.0f},
-        {0.1f, 0.08f, 0.05f, 1.0f},
-            5}},
-        {"model", {{0.1f, 0.1f, 0.1f, 1.0f},
-        {0.8f, 0.8f, 0.5f, 0.1f},
+        0}},
+        {"grass", {{0.0f, 0.6f, 0.1f, 1.0f},
+        {0.8f, 0.8f, 0.8f, 1.0f},
+        {0.4f, 0.35f, 0.2f, 1.0f},
+            10}},
+        {"model", {{0.444f, 0.444f, 0.5f, 1.0f},
+        {0.8f, 0.8f, 0.9f, 0.1f},
         {0.9f, 0.9f, 0.8f, 1.0f},
         50}}
     });
 
     Application::scene->add_objects(
         std::make_unique<Cuboid>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(500, 500, 500), "BasicView", "sky"),
-        std::make_unique<Cuboid>(glm::vec3(0, -5, -5), glm::vec3(20.0, 0.5, 20.0), "BasicView", "wood"),
-        std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView", glm::vec3(20, -20, 20), glm::vec3(1,1,1), "model"),
-        std::make_unique<ModelObject>("TestModels/box.obj", "BasicView", glm::vec3(1,2,3), glm::vec3(1, 5, 1), "model")
+        std::make_unique<Cuboid>(glm::vec3(0, -5, 0), glm::vec3(200.0, 1.0, 200.0), "BasicView", "grass"),
+        std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView", glm::vec3(0, 12, 20), glm::vec3(1,1,1), "model")
     );
 
     Application::run();

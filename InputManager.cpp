@@ -4,21 +4,17 @@
 
 #include "InputManager.h"
 
-#include <random>
-#include <utility>
-
-#include "Scene.h"
-#include "objects/Cuboid.h"
+#include <cctype>
 
 std::map<int, std::function<void()>> InputManager::functions;
 
 void InputManager::handle_input_down(unsigned char key, int x, int y) {
-    key = std::tolower(key);
+    if (std::isupper(key)) key = std::tolower(key);
     keys[key] = true;
 }
 
 void InputManager::handle_input_up(unsigned char key, int x, int y) {
-    key = std::tolower(key);
+    if (std::isupper(key)) key = std::tolower(key);
     keys[key] = false;
 }
 

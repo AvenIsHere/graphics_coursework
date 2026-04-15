@@ -4,7 +4,8 @@
 
 #ifndef GRAPHICS_COURSEWORK_INPUTMANAGER_H
 #define GRAPHICS_COURSEWORK_INPUTMANAGER_H
-#include "Scene.h"
+#include <functional>
+#include <map>
 
 
 struct InputMapping {

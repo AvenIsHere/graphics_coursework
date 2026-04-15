@@ -14,7 +14,7 @@ MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<flo
 }
 
 MeshObject::~MeshObject() {
-    glDeleteBuffers(2, m_vboID);
+    glDeleteBuffers(3, m_vboID);
     glDeleteBuffers(1, &m_iboID);
     glDeleteVertexArrays(1, &m_vaoID);
 }
