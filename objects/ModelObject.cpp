@@ -4,11 +4,11 @@
 
 #include "ModelObject.h"
 
-#include <array>
-
 #include "Cuboid.h"
 
 #include "../GlmMaths.h"
+
+std::map<std::string, ModelObject::Model> ModelObject::models;
 
 ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const glm::vec3 dimensions, const std::string& material_name) {
 
@@ -32,6 +32,14 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->material = get_material(material_name);
 }
 
+ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position, const glm::vec3 dimensions) :
+    ModelObject(models.at(model_name).model_path,
+        models.at(model_name).shader_name,
+        position,
+        dimensions,
+        models.at(model_name).material_name){
+}
+
 void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, SceneData::Light light_data) const {
     glUseProgram(shader->handle());
     glUniform1i(glGetUniformLocation(shader->handle(), "useTexture"), true);
@@ -41,4 +49,14 @@ void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, Scene
     handle_material();
 
     this->three_d_model_->DrawElementsUsingVBO(this->shader.get());
+}
+
+void ModelObject::add_model(const std::string& model_name, Model model) {
+    models[model_name] = std::move(model);
+}
+
+void ModelObject::add_models(const std::vector<std::tuple<std::string,Model>> &given_models) {
+    for (const auto& [mod_name, mod] : given_models) {
+        models[mod_name] = mod;
+    }
 }

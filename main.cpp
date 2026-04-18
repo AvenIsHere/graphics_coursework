@@ -51,16 +51,12 @@ public:
         glutMainLoop();
     }
     static void update() {
-        if (scene) {
-            scene->update();
-            InputManager::update();
-        }
+        scene->update();
+        InputManager::update();
     }
 
     static void render() {
-        if (scene) {
-            scene->render();
-        }
+        scene->render();
     }
 
 };
@@ -101,18 +97,22 @@ int main(int argc, char** argv) {
         0}},
         {"grass", {{0.0f, 0.6f, 0.1f, 1.0f},
         {0.8f, 0.8f, 0.8f, 1.0f},
-        {0.4f, 0.35f, 0.2f, 1.0f},
-            10}},
+        {0.5f, 0.5f, 0.5f, 1.0f},
+            5}},
         {"model", {{0.444f, 0.444f, 0.5f, 1.0f},
         {0.8f, 0.8f, 0.9f, 0.1f},
         {0.9f, 0.9f, 0.8f, 1.0f},
         50}}
     });
 
+    ModelObject::add_models({
+        {"rollercoaster", {"rollercoaster_models/carts/untitled.obj", "BasicView", "model"}}
+    });
+
     Application::scene->add_objects(
         std::make_unique<Cuboid>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(500, 500, 500), "BasicView", "sky"),
         std::make_unique<Cuboid>(glm::vec3(0, -5, 0), glm::vec3(200.0, 1.0, 200.0), "BasicView", "grass"),
-        std::make_unique<ModelObject>("TestModels/airplane.obj", "BasicView", glm::vec3(0, 12, 20), glm::vec3(1,1,1), "model")
+        std::make_unique<ModelObject>("rollercoaster", glm::vec3(0, 12, 20), glm::vec3(1,1,1))
     );
 
     Application::run();

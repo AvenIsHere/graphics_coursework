@@ -5,7 +5,10 @@
 #include "InputManager.h"
 
 #include <cctype>
+#include <set>
+#include <utility>
 
+std::unordered_map<int, bool> InputManager::keys;
 std::map<int, std::function<void()>> InputManager::functions;
 
 void InputManager::handle_input_down(unsigned char key, int x, int y) {
@@ -37,13 +40,12 @@ void InputManager::update() {
 
 void InputManager::add_to_map(int key, std::function<void()> func, bool special) {
     if (special) key += 256;
-    functions.emplace(key, func);
+    functions[key] = std::move(func);
 }
 
 void InputManager::add_mappings(const std::vector<InputMapping>& mappings) {
     for (const auto& mapping : mappings) {
         auto [key, func, special] = mapping;
-        if (special) key += 256;
-        functions.emplace(key, func);
+        add_to_map(key, func, special);
     }
 }

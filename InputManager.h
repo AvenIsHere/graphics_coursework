@@ -16,7 +16,7 @@ struct InputMapping {
 
 class InputManager {
 
-    static inline bool keys[512] = { false };
+    static std::unordered_map<int, bool> keys;
     static std::map<int, std::function<void()>> functions;
 
 public:

@@ -585,6 +585,7 @@ void CThreeDModel::CentreOnZero()
  */
 void CThreeDModel::InitVBO(Shader* myShader)
 {
+
 	CalcFaceNormals();
 
 	if (m_pobOctree == nullptr) // construct the octree if it hasn't been created.
