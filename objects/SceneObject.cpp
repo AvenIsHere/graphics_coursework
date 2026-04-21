@@ -35,8 +35,8 @@ void SceneObject::add_material(const std::string &name, MaterialData material) {
     materials.emplace(name, std::make_shared<MaterialData>(material));
 }
 
-void SceneObject::add_materials(const std::vector<std::tuple<std::string, MaterialData>>& materials) {
-    for (const auto& material : materials) {
+void SceneObject::add_materials(const std::vector<std::tuple<std::string, MaterialData>>& given_materials) {
+    for (const auto& material : given_materials) {
         auto [name, mat] = material;
         add_material(name, mat);
     }

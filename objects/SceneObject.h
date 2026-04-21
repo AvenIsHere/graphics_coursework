@@ -26,6 +26,7 @@ public:
 
     // Destructor
     virtual ~SceneObject() = default;
+
     virtual void draw(const glm::mat4 & view, const glm::mat4 & projection, SceneData::Light light_data) const = 0;
     void handle_lighting(const glm::mat4 & view, SceneData::Light light) const;
     void handle_material() const;
@@ -36,7 +37,7 @@ public:
     static std::shared_ptr<Shader> get_shader(const std::string &name);
 
     static void add_material(const std::string& name, MaterialData material);
-    static void add_materials(const std::vector<std::tuple<std::string, MaterialData>>& materials);
+    static void add_materials(const std::vector<std::tuple<std::string, MaterialData>>& given_materials);
     static std::shared_ptr<MaterialData> get_material(const std::string& name);
 
     std::shared_ptr<Shader> shader;

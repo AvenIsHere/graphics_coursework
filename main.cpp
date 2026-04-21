@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
     });
 
     ModelObject::add_models({
-        {"rollercoaster", {"rollercoaster_models/carts/untitled.obj", "BasicView", "model"}}
+        {"rollercoaster", {"rollercoaster_models/carts/white-front.obj", "BasicView", "model"}}
     });
 
     Application::scene->add_objects(

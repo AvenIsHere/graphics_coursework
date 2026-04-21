@@ -31,19 +31,19 @@ void main(void)
 	//out_Color = vec4(ex_TexCoord,0.0,1.0); //show texture coords
 
 	//Calculate lighting
-	vec3 n, L;
+	vec3 normal, light_angle;
 	vec4 color;
-	float NdotL;
+	float angle_from_light;
 
-	n = normalize(ex_Normal);
-	L = normalize(ex_LightDir);
+	normal = normalize(ex_Normal);
+	light_angle = normalize(ex_LightDir);
 
 	vec3 v = normalize(-ex_PositionEye);
-	vec3 r = normalize(-reflect(L, n));
+	vec3 r = normalize(-reflect(light_angle, normal));
 
 	float RdotV = max(0.0, dot(r, v));
 
-	NdotL = max(dot(n, L),0.0);
+	angle_from_light = max(dot(normal, light_angle), 0.0);
 
 	color = light_ambient * material_ambient;
 
@@ -52,9 +52,9 @@ void main(void)
 		updated_diffuse = material_diffuse * vec4(ex_Color, 1.0);
 	}
 
-	if(NdotL > 0.0)
+	if(angle_from_light > 0.0)
 	{
-		color += (light_diffuse * updated_diffuse * NdotL);
+		color += (light_diffuse * updated_diffuse * angle_from_light);
 	}
 
 	color += material_specular * light_specular * pow(RdotV, material_shininess);

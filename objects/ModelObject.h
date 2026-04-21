@@ -4,7 +4,7 @@
 
 #ifndef GRAPHICS_COURSEWORK_MODELOBJECT_H
 #define GRAPHICS_COURSEWORK_MODELOBJECT_H
-#include <array>
+
 #include <memory>
 
 #include "SceneObject.h"

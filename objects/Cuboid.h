@@ -11,7 +11,7 @@
 
 class Cuboid : public MeshObject {
 public:
-    explicit Cuboid(glm::vec3 pos_vec, glm::vec3 dimensions, const std::string& shader_name, const std::string& material_name);
+    explicit Cuboid(glm::vec3 position, glm::vec3 dimensions, const std::string& shader_name, const std::string& material_name);
 
 private:
 
