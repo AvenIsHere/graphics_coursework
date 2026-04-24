@@ -13,13 +13,29 @@
 #include "objects/Cuboid.h"
 #include "objects/ModelObject.h"
 
-class Application {
-public:
-    static inline float SCREEN_WIDTH = 1000.0;
-    static inline float SCREEN_HEIGHT = 800.0;
-    static inline std::unique_ptr<Scene> scene = nullptr;
+namespace Application {
+    float SCREEN_WIDTH = 1000.0;
+    float SCREEN_HEIGHT = 800.0;
+    std::unique_ptr<Scene> scene = nullptr;
 
-    static void init(int argc, char** argv, float screen_width, float screen_height, const std::string& scene_config) {
+    json get_json(const std::string& path) {
+        std::ifstream f(path);
+        return json::parse(f);
+    }
+
+    void run() {
+        glutMainLoop();
+    }
+    void update() {
+        scene->update();
+        InputManager::update();
+    }
+
+    void render() {
+        scene->render();
+    }
+
+    void init(int argc, char** argv, float screen_width, float screen_height, const std::string& scene_config) {
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
         glutCreateWindow("Test");
@@ -42,24 +58,7 @@ public:
         scene = std::make_unique<Scene>(screen_width, screen_height, get_json(scene_config));
     }
 
-    static json get_json(const std::string& path) {
-        std::ifstream f(path);
-        return json::parse(f);
-    }
-
-    static void run() {
-        glutMainLoop();
-    }
-    static void update() {
-        scene->update();
-        InputManager::update();
-    }
-
-    static void render() {
-        scene->render();
-    }
-
-};
+}
 
 int main(int argc, char** argv) {
 
