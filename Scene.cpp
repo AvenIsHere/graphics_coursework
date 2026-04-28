@@ -17,7 +17,7 @@
 
 #include "objects/Cuboid.h"
 
-Scene::Scene(const float screen_width, const float screen_height, json json_data) : scene_config(screen_width, screen_height, std::move(json_data)) {
+Scene::Scene(const int screen_width, const int screen_height, json json_data) : scene_config(screen_width, screen_height, std::move(json_data)) {
     this->screen_width = screen_width;
     this->screen_height = screen_height;
     glutReshapeWindow(screen_width, screen_height);
@@ -92,4 +92,10 @@ void Scene::update() {
 
 float Scene::get_speed() const {
     return scene_config.speed;
+}
+
+void Scene::screen_resize(int width, int height) {
+    const float aspect = static_cast<float>(width) / static_cast<float>(height);
+    scene_config.proj_matrix = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+    glViewport(0, 0, width, height);
 }

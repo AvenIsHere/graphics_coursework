@@ -22,7 +22,7 @@ public:
         std::array<float, 4> specular;
     };
 
-    SceneData(float screen_width, float screen_height, json json_data);
+    SceneData(int screen_width, int screen_height, json json_data);
 
     // camera
     float speed;

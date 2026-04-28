@@ -14,8 +14,8 @@
 #include "objects/ModelObject.h"
 
 namespace Application {
-    float SCREEN_WIDTH = 1000.0;
-    float SCREEN_HEIGHT = 800.0;
+    int SCREEN_WIDTH = 1000;
+    int SCREEN_HEIGHT = 800;
     std::unique_ptr<Scene> scene = nullptr;
 
     json get_json(const std::string& path) {
@@ -35,7 +35,11 @@ namespace Application {
         scene->render();
     }
 
-    void init(int argc, char** argv, float screen_width, float screen_height, const std::string& scene_config) {
+    void screen_resize(int width, int height) {
+        scene->screen_resize(width, height);
+    }
+
+    void init(int argc, char** argv, int screen_width, int screen_height, const std::string& scene_config) {
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
         glutCreateWindow("Test");
@@ -52,6 +56,8 @@ namespace Application {
 
         glutSpecialFunc(InputManager::handle_input_down);
         glutSpecialUpFunc(InputManager::handle_input_up);
+
+        glutReshapeFunc(screen_resize);
 
         glutIdleFunc(update);
 

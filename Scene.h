@@ -30,7 +30,7 @@ public:
         Y,
     };
 
-    Scene(float screen_width, float screen_height, json json_data);
+    Scene(int screen_width, int screen_height, json json_data);
 
     void update();
     void update_view();
@@ -45,6 +45,8 @@ public:
     void move(Direction direction, float amount);
     void rotate(Axis axis, float given_rotation);
 
+    void screen_resize(int width, int height);
+
     [[nodiscard]] float get_speed() const;
 
 private:
@@ -52,8 +54,8 @@ private:
 
     SceneData scene_config;
 
-    float screen_width;
-    float screen_height;
+    int screen_width;
+    int screen_height;
 };
 
 

@@ -9,9 +9,11 @@
 #include "GlmMaths.h"
 
 
-SceneData::SceneData(float screen_width, float screen_height, json json_data) {
+SceneData::SceneData(int screen_width, int screen_height, json json_data) {
 
     this->json_data = json_data;
+
+    float screen_aspect = static_cast<float>(screen_width) / static_cast<float>(screen_height);
 
     // camera
     camera_pos = glm::vec3(
@@ -24,7 +26,7 @@ SceneData::SceneData(float screen_width, float screen_height, json json_data) {
     };
     speed = json_data["camera-speed"];
     view_matrix = GlmMaths::pos_to_translation(camera_pos);
-    proj_matrix = glm::perspective(glm::radians(45.0f), screen_width / screen_height, 0.1f, 1000.0f);
+    proj_matrix = glm::perspective(glm::radians(45.0f), screen_aspect, 0.1f, 1000.0f);
 
 
     // lighting
