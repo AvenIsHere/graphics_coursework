@@ -21,11 +21,11 @@ void InputManager::handle_input_up(unsigned char key, int x, int y) {
     keys[key] = false;
 }
 
-void InputManager::handle_input_down(int key, int x, int y) {
+void InputManager::handle_input_down(const int key, int x, int y) {
     keys[key + 256] = true;
 }
 
-void InputManager::handle_input_up(int key, int x, int y) {
+void InputManager::handle_input_up(const int key, int x, int y) {
     keys[key + 256] = false;
 }
 

@@ -15,8 +15,8 @@
 #include "objects/ModelObject.h"
 
 namespace Application {
-    int SCREEN_WIDTH = 1000;
-    int SCREEN_HEIGHT = 800;
+    constexpr int SCREEN_WIDTH = 1000;
+    constexpr int SCREEN_HEIGHT = 800;
     std::unique_ptr<Scene> scene = nullptr;
 
     json get_json(const std::string& path) {
@@ -36,7 +36,7 @@ namespace Application {
         scene->render();
     }
 
-    void screen_resize(int width, int height) {
+    void screen_resize(const int width, const int height) {
         scene->screen_resize(width, height);
     }
 
@@ -64,7 +64,6 @@ namespace Application {
 
         scene = std::make_unique<Scene>(screen_width, screen_height, get_json(scene_config));
     }
-
 }
 
 int main(int argc, char** argv) {

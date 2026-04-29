@@ -43,8 +43,8 @@ void Scene::set_on_update(const std::function<void()> &func) {
 
 void Scene::move(const Direction direction, float amount) {
 
-    float x_dir = std::sin(scene_config.rotation["x"]);
-    float z_dir = -std::cos(scene_config.rotation["x"]);
+    const float x_dir = std::sin(scene_config.rotation["x"]);
+    const float z_dir = -std::cos(scene_config.rotation["x"]);
 
     switch (direction) {
         case FORWARDS:
@@ -99,7 +99,7 @@ float Scene::get_speed() const {
     return scene_config.speed;
 }
 
-void Scene::screen_resize(int width, int height) {
+void Scene::screen_resize(const int width, const int height) {
     const float aspect = static_cast<float>(width) / static_cast<float>(height);
     scene_config.proj_matrix = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
     glViewport(0, 0, width, height);
