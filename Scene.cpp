@@ -33,8 +33,12 @@ void Scene::render() const {
     glutSwapBuffers();
 }
 
-void Scene::add_object(std::unique_ptr<SceneObject> obj) {
-    this->objects.push_back(std::move(obj));
+void Scene::add_object(std::shared_ptr<SceneObject> obj) {
+    this->objects.push_back(obj);
+}
+
+void Scene::set_on_update(const std::function<void()> &func) {
+    on_update = func;
 }
 
 void Scene::move(const Direction direction, float amount) {
@@ -88,6 +92,7 @@ void Scene::update_view() {
 void Scene::update() {
     glutPostRedisplay();
     update_view();
+    on_update();
 }
 
 float Scene::get_speed() const {

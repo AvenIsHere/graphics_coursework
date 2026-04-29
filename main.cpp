@@ -1,9 +1,10 @@
-#include <array>
-#include <fstream>
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
 #include <glm/glm.hpp>
+
+#include <array>
+#include <fstream>
 #include <iostream>
 #include <functional>
 #include <vector>
@@ -100,25 +101,34 @@ int main(int argc, char** argv) {
         {0.529f, 0.808f, 0.922f, 1.0f},
         {0.1f, 0.08f, 0.05f, 1.0f},
         0}},
-        {"grass", {{0.0f, 0.6f, 0.1f, 1.0f},
+        {"grass", {
+        {0.0f, 0.6f, 0.1f, 1.0f},
         {0.8f, 0.8f, 0.8f, 1.0f},
         {0.5f, 0.5f, 0.5f, 1.0f},
-            5}},
-        {"model", {{0.444f, 0.444f, 0.5f, 1.0f},
+        5}},
+        {"model", {
+        {0.444f, 0.444f, 0.5f, 1.0f},
         {0.8f, 0.8f, 0.9f, 0.1f},
         {0.9f, 0.9f, 0.8f, 1.0f},
         50}}
     });
 
     ModelObject::add_models({
-        {"rollercoaster", {"rollercoaster_models/carts/white-front.obj", "BasicView", "model"}}
+        {"rollercoaster_cart", {"rollercoaster_models/carts/white-front.obj", "BasicView", "model"}}
     });
 
+    auto cart = std::make_shared<ModelObject>("rollercoaster_cart", glm::vec3(0, 12, 20), glm::vec3(1,1,1));
+
     Application::scene->add_objects(
-        std::make_unique<Cuboid>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(500, 500, 500), "BasicView", "sky"),
-        std::make_unique<Cuboid>(glm::vec3(0, -5, 0), glm::vec3(200.0, 1.0, 200.0), "BasicView", "grass"),
-        std::make_unique<ModelObject>("rollercoaster", glm::vec3(0, 12, 20), glm::vec3(1,1,1))
+        std::make_shared<Cuboid>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(500, 500, 500), "BasicView", "sky"),
+        std::make_shared<Cuboid>(glm::vec3(0, -5, 0), glm::vec3(200.0, 1.0, 200.0), "BasicView", "grass"),
+        cart
     );
+
+    Application::scene->set_on_update([&] {
+        cart->move(glm::vec3(0.05f, 0, 0));
+        cart->rotate(0.02, glm::vec3(0, 1, 0));
+    });
 
     Application::run();
 

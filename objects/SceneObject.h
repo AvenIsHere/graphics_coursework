@@ -28,9 +28,14 @@ public:
     virtual ~SceneObject() = default;
 
     virtual void draw(const glm::mat4 & view, const glm::mat4 & projection, SceneData::Light light_data) const = 0;
+    void move(glm::vec3 direction);
+    void rotate(float angle, glm::vec3 axis);
+
+
     void handle_lighting(const glm::mat4 & view, SceneData::Light light) const;
     void handle_material() const;
     void handle_location(const glm::mat4 & view, const glm::mat4 & projection) const;
+    glm::mat4 handle_rotation(glm::mat4 model_view_matrix) const;
 
     static void add_shader(const std::string& name, const std::string &vert_path, const std::string &frag_path);
     static void add_shaders(const std::vector<std::array<std::string, 3>>& given_array);
@@ -43,6 +48,7 @@ public:
     std::shared_ptr<Shader> shader;
     std::shared_ptr<MaterialData> material;
     glm::mat4 model_matrix;
+    glm::vec3 rotation{};
 protected:
     static std::unordered_map<std::string, std::shared_ptr<Shader>> shaders;
     static std::unordered_map<std::string, std::shared_ptr<MaterialData>> materials;

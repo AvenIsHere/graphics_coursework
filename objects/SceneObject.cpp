@@ -7,6 +7,7 @@
 #include <array>
 #include <iostream>
 #include <vector>
+#include <glm/ext/matrix_transform.hpp>
 
 #include "../Scene.h"
 
@@ -61,8 +62,16 @@ void SceneObject::handle_material() const {
     glUniform1f(glGetUniformLocation(shader->handle(), "material_shininess"), material->material_shininess);
 }
 
+glm::mat4 SceneObject::handle_rotation(glm::mat4 model_view_matrix) const {
+    model_view_matrix = glm::rotate(model_view_matrix, rotation.x, glm::vec3(1,0,0));
+    model_view_matrix = glm::rotate(model_view_matrix, rotation.y, glm::vec3(0, 1, 0));
+    model_view_matrix = glm::rotate(model_view_matrix, rotation.z, glm::vec3(0, 0, 1));
+    return model_view_matrix;
+}
+
 void SceneObject::handle_location(const glm::mat4 & view, const glm::mat4 & projection) const {
     glm::mat4 model_view_matrix = view * model_matrix;
+    model_view_matrix = handle_rotation(model_view_matrix);
     glm::mat3 normal_matrix = glm::transpose(glm::inverse(model_view_matrix));
     glUniformMatrix4fv(shader->getProjLocation(), 1, GL_FALSE, &projection[0][0]);
     glUniformMatrix4fv(shader->getModelViewLocation(), 1, GL_FALSE, &model_view_matrix[0][0]);
@@ -70,3 +79,18 @@ void SceneObject::handle_location(const glm::mat4 & view, const glm::mat4 & proj
     glUniformMatrix4fv(glGetUniformLocation(shader->handle(), "ViewMatrix"), 1, GL_FALSE, &view[0][0]);
 }
 
+void SceneObject::move(glm::vec3 direction) {
+    glm::mat4 rotate(1.0f);
+    rotate = glm::rotate(rotate, rotation.x, glm::vec3(1,0,0));
+    rotate = glm::rotate(rotate, rotation.y, glm::vec3(0,1,0));
+    rotate = glm::rotate(rotate, rotation.z, glm::vec3(0,0,1));
+    glm::vec3 rotate_matrix = glm::vec3(rotate * glm::vec4(direction, 0.0f));
+    this->model_matrix = glm::translate(this->model_matrix, rotate_matrix);
+}
+
+void SceneObject::rotate(const float angle, const glm::vec3 axis) {
+    rotation += angle * axis;
+    for (int i = 0; i < glm::vec3::length(); i++) {
+        rotation[i] = std::fmod(rotation[i], 2*std::numbers::pi);
+    }
+}

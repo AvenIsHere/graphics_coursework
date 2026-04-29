@@ -36,11 +36,13 @@ public:
     void update_view();
     void render() const;
 
-    void add_object(std::unique_ptr<SceneObject> obj);
+    void add_object(std::shared_ptr<SceneObject> obj);
     template<typename... Args>
     void add_objects(Args&&... object) {
         (add_object(std::forward<Args>(object)), ...);
     }
+
+    void set_on_update(const std::function<void()> &func);
 
     void move(Direction direction, float amount);
     void rotate(Axis axis, float given_rotation);
@@ -50,7 +52,9 @@ public:
     [[nodiscard]] float get_speed() const;
 
 private:
-    std::vector<std::unique_ptr<SceneObject>> objects;
+    std::vector<std::shared_ptr<SceneObject>> objects;
+
+    std::function<void()> on_update;
 
     SceneData scene_config;
 
