@@ -79,18 +79,18 @@ void SceneObject::handle_location(const glm::mat4 & view, const glm::mat4 & proj
     glUniformMatrix4fv(glGetUniformLocation(shader->handle(), "ViewMatrix"), 1, GL_FALSE, &view[0][0]);
 }
 
-void SceneObject::move(glm::vec3 direction) {
+void SceneObject::move(const glm::vec3 direction) {
     glm::mat4 rotate(1.0f);
     rotate = glm::rotate(rotate, rotation.x, glm::vec3(1,0,0));
     rotate = glm::rotate(rotate, rotation.y, glm::vec3(0,1,0));
     rotate = glm::rotate(rotate, rotation.z, glm::vec3(0,0,1));
-    glm::vec3 rotate_matrix = glm::vec3(rotate * glm::vec4(direction, 0.0f));
+    const auto rotate_matrix = glm::vec3(rotate * glm::vec4(direction, 0.0f));
     this->model_matrix = glm::translate(this->model_matrix, rotate_matrix);
 }
 
 void SceneObject::rotate(const float angle, const glm::vec3 axis) {
     rotation += angle * axis;
     for (int i = 0; i < glm::vec3::length(); i++) {
-        rotation[i] = std::fmod(rotation[i], 2*std::numbers::pi);
+        rotation[i] = std::fmod(rotation[i], static_cast<float>(2*std::numbers::pi));
     }
 }

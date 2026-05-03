@@ -36,11 +36,8 @@ public:
     void update_view();
     void render() const;
 
-    void add_object(std::shared_ptr<SceneObject> obj);
-    template<typename... Args>
-    void add_objects(Args&&... object) {
-        (add_object(std::forward<Args>(object)), ...);
-    }
+    void add_object(const std::shared_ptr<SceneObject>& obj);
+    void add_objects(const std::vector<std::shared_ptr<SceneObject>>& given_objects);
 
     void set_on_update(const std::function<void()> &func);
 

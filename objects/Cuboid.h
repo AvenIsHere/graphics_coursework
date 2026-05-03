@@ -13,9 +13,8 @@ class Cuboid : public MeshObject {
 public:
     explicit Cuboid(glm::vec3 position, glm::vec3 dimensions, const std::string& shader_name, const std::string& material_name);
 
+    glm::vec3 get_aabb_dimensions() override;
 private:
-
-    glm::vec3 dimensions{};
 
     //CONSTS
     static constexpr int TRI_VERTS = 3;

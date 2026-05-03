@@ -7,7 +7,6 @@
 #include <functional>
 #include <map>
 
-
 struct InputMapping {
     int key;
     std::function<void()> function;

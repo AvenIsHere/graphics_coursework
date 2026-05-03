@@ -20,6 +20,7 @@
 Scene::Scene(const int screen_width, const int screen_height, json json_data) : scene_config(screen_width, screen_height, std::move(json_data)) {
     this->screen_width = screen_width;
     this->screen_height = screen_height;
+
     glutReshapeWindow(screen_width, screen_height);
 }
 
@@ -33,8 +34,14 @@ void Scene::render() const {
     glutSwapBuffers();
 }
 
-void Scene::add_object(std::shared_ptr<SceneObject> obj) {
+void Scene::add_object(const std::shared_ptr<SceneObject>& obj) {
     this->objects.push_back(obj);
+}
+
+void Scene::add_objects(const std::vector<std::shared_ptr<SceneObject>>& given_objects) {
+    for (const auto& object : given_objects) {
+        add_object(object);
+    }
 }
 
 void Scene::set_on_update(const std::function<void()> &func) {
@@ -42,7 +49,6 @@ void Scene::set_on_update(const std::function<void()> &func) {
 }
 
 void Scene::move(const Direction direction, float amount) {
-
     const float x_dir = std::sin(scene_config.rotation["x"]);
     const float z_dir = -std::cos(scene_config.rotation["x"]);
 
@@ -92,7 +98,7 @@ void Scene::update_view() {
 void Scene::update() {
     glutPostRedisplay();
     update_view();
-    on_update();
+    if (on_update) on_update();
 }
 
 float Scene::get_speed() const {

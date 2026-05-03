@@ -1,12 +1,12 @@
-#ifndef _BOX_H
-#define _BOX_H
+#ifndef BOX_H
+#define BOX_H
 
 #include <GL/glew.h>
 
 class Shader;
 
-const int NumberOfVertexCoords = 24;
-const int NumberOfTriangleIndices = 36;
+constexpr int NumberOfVertexCoords = 24;
+constexpr int NumberOfTriangleIndices = 36;
 
 
 class CBox
@@ -29,4 +29,4 @@ public:
 	void render();
 };
 
-#endif _BOX_H
+#endif // BOX_H

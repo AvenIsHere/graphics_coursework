@@ -10,13 +10,13 @@
 
 std::map<std::string, ModelObject::Model> ModelObject::models;
 
-ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const glm::vec3 dimensions, const std::string& material_name) {
+ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const glm::vec3 scale, const std::string& material_name) {
 
     this->shader = get_shader(shader_name);
     this->three_d_model_ = std::make_unique<CThreeDModel>();
 
     this->model_matrix = GlmMaths::pos_to_translation(position);
-    this->model_matrix = glm::scale(model_matrix, dimensions);
+    this->model_matrix = glm::scale(model_matrix, scale);
 
     const auto c_obj_loader = std::make_unique<COBJLoader>();
     if (!c_obj_loader->LoadModel(model_path)) {
@@ -30,6 +30,8 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->three_d_model_->InitVBO(this->shader.get());
 
     this->material = get_material(material_name);
+
+    this->aabb_dimensions = get_aabb_dimensions();
 }
 
 ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position, const glm::vec3 dimensions) :
@@ -38,6 +40,12 @@ ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position
         position,
         dimensions,
         models.at(model_name).material_name){
+}
+
+glm::vec3 ModelObject::get_aabb_dimensions() {
+    double min_x, max_x, min_y, max_y, min_z, max_z;
+    three_d_model_->CalcBoundingBox(min_x, min_y, min_z, max_x, max_y, max_z);
+    return {max_x-min_x, max_y-min_y, max_z-min_z};
 }
 
 void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, SceneData::Light light_data) const {

@@ -2,11 +2,10 @@
 // Created by aven on 08/04/2026.
 //
 
-#include "InputManager.h"
-
 #include <cctype>
-#include <set>
 #include <utility>
+
+#include "InputManager.h"
 
 std::unordered_map<int, bool> InputManager::keys;
 std::map<int, std::function<void()>> InputManager::functions;

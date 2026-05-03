@@ -9,6 +9,7 @@
 #include <functional>
 #include <vector>
 
+#include "CoasterTrack.h"
 #include "InputManager.h"
 #include "Scene.h"
 #include "objects/Cuboid.h"
@@ -27,6 +28,7 @@ namespace Application {
     void run() {
         glutMainLoop();
     }
+
     void update() {
         scene->update();
         InputManager::update();
@@ -66,8 +68,7 @@ namespace Application {
     }
 }
 
-int main(int argc, char** argv) {
-
+int main(const int argc, char** argv) {
     Application::init(argc, argv, Application::SCREEN_WIDTH, Application::SCREEN_HEIGHT, "scene_config.json");
 
     InputManager::add_mappings({
@@ -113,16 +114,46 @@ int main(int argc, char** argv) {
     });
 
     ModelObject::add_models({
-        {"rollercoaster_cart", {"rollercoaster_models/carts/white-front.obj", "BasicView", "model"}}
+        {"rollercoaster_cart",{"rollercoaster_models/carts/red.obj", "BasicView", "model"}},
+        {"STRAIGHT",{"rollercoaster_models/tracks/straight.obj", "BasicView", "model"}},
+        {"BEND",{"rollercoaster_models/tracks/bend.obj", "BasicView", "model"}},
+        {"LOOP",{"rollercoaster_models/tracks/loop.obj", "BasicView", "model"}}
+    });
+
+    CoasterTrack::add_tracks({
+            {CoasterTrack::TrackType::STRAIGHT, {"STRAIGHT", glm::vec3(10.0f, 0, 0), 0.0f}},
+            {CoasterTrack::TrackType::LEFT, {"BEND", glm::vec3(5.0f, 0, 0), glm::radians(-90.0f)}},
+            {CoasterTrack::TrackType::RIGHT, {"BEND", glm::vec3(5.0f, 0, 0), glm::radians(90.0f)}},
+            {CoasterTrack::TrackType::LOOP, {"LOOP", glm::vec3(15.0f, 0, 10.0f), 0.0f}}
+    });
+
+    auto rollercoaster = CoasterTrack({
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::LOOP,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::RIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::LEFT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+
     });
 
     auto cart = std::make_shared<ModelObject>("rollercoaster_cart", glm::vec3(0, 12, 20), glm::vec3(1,1,1));
 
-    Application::scene->add_objects(
+    Application::scene->add_objects({
         std::make_shared<Cuboid>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(500, 500, 500), "BasicView", "sky"),
         std::make_shared<Cuboid>(glm::vec3(0, -5, 0), glm::vec3(200.0, 1.0, 200.0), "BasicView", "grass"),
         cart
-    );
+    });
+
+    Application::scene->add_objects(rollercoaster.get_model_objs());
 
     Application::scene->set_on_update([&] {
         cart->move(glm::vec3(0.05f, 0, 0));

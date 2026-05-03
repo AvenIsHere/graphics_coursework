@@ -12,7 +12,6 @@
 #include <glm/mat4x4.hpp>
 
 #include "../Shader.h"
-
 #include "../SceneData.h"
 
 class SceneObject {
@@ -31,11 +30,13 @@ public:
     void move(glm::vec3 direction);
     void rotate(float angle, glm::vec3 axis);
 
+    virtual glm::vec3 get_aabb_dimensions() = 0;
+
 
     void handle_lighting(const glm::mat4 & view, SceneData::Light light) const;
     void handle_material() const;
     void handle_location(const glm::mat4 & view, const glm::mat4 & projection) const;
-    glm::mat4 handle_rotation(glm::mat4 model_view_matrix) const;
+    [[nodiscard]] glm::mat4 handle_rotation(glm::mat4 model_view_matrix) const;
 
     static void add_shader(const std::string& name, const std::string &vert_path, const std::string &frag_path);
     static void add_shaders(const std::vector<std::array<std::string, 3>>& given_array);
@@ -52,6 +53,8 @@ public:
 protected:
     static std::unordered_map<std::string, std::shared_ptr<Shader>> shaders;
     static std::unordered_map<std::string, std::shared_ptr<MaterialData>> materials;
+
+    glm::vec3 aabb_dimensions;
 };
 
 

@@ -40,6 +40,8 @@ add_executable(graphics_coursework main.cpp
         objects/ModelObject.cpp
         SceneData.cpp
         SceneData.h
+        CoasterTrack.cpp
+        CoasterTrack.h
 )
 
 target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES} freeimage)
