@@ -44,7 +44,47 @@ void Scene::add_objects(const std::vector<std::shared_ptr<SceneObject>>& given_o
     }
 }
 
-void Scene::set_on_update(const std::function<void()> &func) {
+void Scene::remove_object(const std::shared_ptr<SceneObject> &obj) {
+    if (const auto item = std::ranges::find(this->objects, obj); item != this->objects.end()) {
+        this->objects.erase(item);
+    }
+}
+
+void Scene::remove_objects(const std::vector<std::shared_ptr<SceneObject> > &given_objects) {
+    for (const auto& obj : given_objects) {
+        remove_object(obj);
+    }
+}
+
+void Scene::add_coaster(std::shared_ptr<CoasterTrack> coaster) {
+    coasters.emplace_back(coaster);
+    add_objects(coaster->get_model_objs());
+}
+
+void Scene::remove_coaster(const std::shared_ptr<CoasterTrack> &coaster) {
+    if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
+        remove_objects(coaster->get_model_objs());
+        coasters.erase(item);
+    }
+}
+
+void Scene::add_track_to_coaster(const std::shared_ptr<CoasterTrack> &coaster, CoasterTrack::TrackType type) {
+    if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
+        remove_objects(coaster->get_model_objs());
+        coaster->add_track(type);
+        add_objects(coaster->get_model_objs());
+    }
+}
+
+void Scene::pop_track_from_coaster(const std::shared_ptr<CoasterTrack> &coaster) {
+    if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
+        remove_objects(coaster->get_model_objs());
+        coaster->pop_track();
+        add_objects(coaster->get_model_objs());
+    }
+}
+
+void Scene::set_on_update(const std::function<void(int)> &func) {
     on_update = func;
 }
 
@@ -88,17 +128,17 @@ void Scene::rotate(const Axis axis, const float given_rotation) {
     }
 }
 
-void Scene::update_view() {
+void Scene::update_view(int time_elapsed) {
     auto view = glm::mat4(1.0f);
     view = glm::rotate(view, scene_config.rotation["y"], glm::vec3(1.0f, 0.0f, 0.0f));
     view = glm::rotate(view, scene_config.rotation["x"], glm::vec3(0.0f, 1.0f, 0.0f));
     scene_config.view_matrix = glm::translate(view, -scene_config.camera_pos);
 }
 
-void Scene::update() {
+void Scene::update(const int time_elapsed) {
     glutPostRedisplay();
-    update_view();
-    if (on_update) on_update();
+    update_view(time_elapsed);
+    if (on_update) on_update(time_elapsed);
 }
 
 float Scene::get_speed() const {

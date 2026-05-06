@@ -18,6 +18,8 @@
 namespace Application {
     constexpr int SCREEN_WIDTH = 1000;
     constexpr int SCREEN_HEIGHT = 800;
+    int time_elapsed = 0;
+    int prev_time_elapsed = 0;
     std::unique_ptr<Scene> scene = nullptr;
 
     json get_json(const std::string& path) {
@@ -30,8 +32,10 @@ namespace Application {
     }
 
     void update() {
-        scene->update();
-        InputManager::update();
+        time_elapsed = glutGet(GLUT_ELAPSED_TIME);
+        scene->update(time_elapsed);
+        InputManager::update(time_elapsed);
+        prev_time_elapsed = time_elapsed;
     }
 
     void render() {
@@ -71,25 +75,6 @@ namespace Application {
 int main(const int argc, char** argv) {
     Application::init(argc, argv, Application::SCREEN_WIDTH, Application::SCREEN_HEIGHT, "scene_config.json");
 
-    InputManager::add_mappings({
-        // movement
-        {'w', []{Application::scene->move(Scene::FORWARDS, Application::scene->get_speed());}},
-        {'s', []{Application::scene->move(Scene::BACKWARDS, Application::scene->get_speed());}},
-        {'a', []{Application::scene->move(Scene::LEFT, Application::scene->get_speed());}},
-        {'d', []{Application::scene->move(Scene::RIGHT, Application::scene->get_speed());}},
-        {' ', []{Application::scene->move(Scene::UP, Application::scene->get_speed());}},
-        {GLUT_KEY_SHIFT_L, []{Application::scene->move(Scene::DOWN, Application::scene->get_speed());}, true},
-
-        // rotation
-        {GLUT_KEY_LEFT, []{Application::scene->rotate(Scene::X, -0.02f);}, true},
-        {GLUT_KEY_RIGHT, []{Application::scene->rotate(Scene::X, 0.02f);}, true},
-        {GLUT_KEY_UP, []{Application::scene->rotate(Scene::Y, -0.013f);}, true},
-        {GLUT_KEY_DOWN, []{Application::scene->rotate(Scene::Y, 0.013f);}, true},
-
-        // exit on esc
-        {27, []{glutLeaveMainLoop();}}
-    });
-
     SceneObject::add_shaders({
         {"BasicView", "glsl_files/basicTransformations.vert", "glsl_files/basicTransformations.frag"},
         {"Cuboid", "glsl_files/basic.vert", "glsl_files/basic.frag"}
@@ -120,30 +105,35 @@ int main(const int argc, char** argv) {
         {"LOOP",{"rollercoaster_models/tracks/loop.obj", "BasicView", "model"}}
     });
 
-    CoasterTrack::add_tracks({
-            {CoasterTrack::TrackType::STRAIGHT, {"STRAIGHT", glm::vec3(10.0f, 0, 0), 0.0f}},
-            {CoasterTrack::TrackType::LEFT, {"BEND", glm::vec3(5.0f, 0, 0), glm::radians(-90.0f)}},
-            {CoasterTrack::TrackType::RIGHT, {"BEND", glm::vec3(5.0f, 0, 0), glm::radians(90.0f)}},
-            {CoasterTrack::TrackType::LOOP, {"LOOP", glm::vec3(15.0f, 0, 10.0f), 0.0f}}
+    CoasterTrack::new_tracks({
+    {CoasterTrack::TrackType::STRAIGHT, {"STRAIGHT", 0.0f, {0, 0.65, 1.37}, {6.38, 0.65, 1.37}}},
+    {CoasterTrack::TrackType::LEFT, {"BEND", glm::radians(90.0f)}},
+    {CoasterTrack::TrackType::RIGHT, {"BEND", glm::radians(-90.0f), {0, 0.65, 1.36}, {2.38, 0.65, 3.74}}},
+    {CoasterTrack::TrackType::LOOP, {"LOOP", 0.0f, {0, 0.65, 1.37}, {12.73, 0.65, 6.24}}}
     });
 
-    auto rollercoaster = CoasterTrack({
+    auto coaster = std::make_shared<CoasterTrack>(CoasterTrack({
         CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::LOOP,
+        CoasterTrack::TrackType::RIGHT,
+        CoasterTrack::TrackType::RIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::RIGHT,
         CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::LEFT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::RIGHT,
+        CoasterTrack::TrackType::LOOP,
+    }, {-20, 1, -60}));
 
-    });
+    Application::scene->add_coaster(coaster);
 
     auto cart = std::make_shared<ModelObject>("rollercoaster_cart", glm::vec3(0, 12, 20), glm::vec3(1,1,1));
 
@@ -153,11 +143,35 @@ int main(const int argc, char** argv) {
         cart
     });
 
-    Application::scene->add_objects(rollercoaster.get_model_objs());
-
-    Application::scene->set_on_update([&] {
+    Application::scene->set_on_update([&](int time_elapsed) {
         cart->move(glm::vec3(0.05f, 0, 0));
         cart->rotate(0.02, glm::vec3(0, 1, 0));
+    });
+
+    InputManager::add_mappings({
+        // movement
+        {'w', []{Application::scene->move(Scene::FORWARDS, Application::scene->get_speed());}},
+        {'s', []{Application::scene->move(Scene::BACKWARDS, Application::scene->get_speed());}},
+        {'a', []{Application::scene->move(Scene::LEFT, Application::scene->get_speed());}},
+        {'d', []{Application::scene->move(Scene::RIGHT, Application::scene->get_speed());}},
+        {' ', []{Application::scene->move(Scene::UP, Application::scene->get_speed());}},
+        {GLUT_KEY_SHIFT_L, []{Application::scene->move(Scene::DOWN, Application::scene->get_speed());}, true},
+
+        // rotation
+        {GLUT_KEY_LEFT, []{Application::scene->rotate(Scene::X, -0.02f);}, true},
+        {GLUT_KEY_RIGHT, []{Application::scene->rotate(Scene::X, 0.02f);}, true},
+        {GLUT_KEY_UP, []{Application::scene->rotate(Scene::Y, -0.013f);}, true},
+        {GLUT_KEY_DOWN, []{Application::scene->rotate(Scene::Y, 0.013f);}, true},
+
+        // exit on esc
+        {27, []{glutLeaveMainLoop();}},
+
+        // edit track
+        {'1', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::STRAIGHT);}},
+        {'2', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::LEFT);}},
+        {'3', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::RIGHT);}},
+        {'4', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::LOOP);}},
+        {8, [coaster]{Application::scene->pop_track_from_coaster(coaster);}}
     });
 
     Application::run();

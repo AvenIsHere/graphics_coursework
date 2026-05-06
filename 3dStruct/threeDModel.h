@@ -71,6 +71,7 @@ public:
 	void						CentreOnZero();
 	void						CalcCentrePoint();
 	Vector3d*					GetCentrePoint();
+	void                        MoveOriginToMin();
 	void						InitVBO(Shader* myShader);
 	void						DrawElementsUsingVBO(Shader* myShader);
 	void						DrawBoundingBox(Shader* shader);

@@ -25,8 +25,7 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
 
     this->three_d_model_->ConstructModelFromOBJLoader(*c_obj_loader);
 
-    this->three_d_model_->CalcCentrePoint();
-    this->three_d_model_->CentreOnZero();
+    this->three_d_model_->MoveOriginToMin();
     this->three_d_model_->InitVBO(this->shader.get());
 
     this->material = get_material(material_name);

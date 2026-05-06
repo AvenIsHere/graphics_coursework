@@ -574,6 +574,21 @@ void CThreeDModel::CentreOnZero()
 	m_obCentrePoint = Vector3d(0,0,0);
 }
 
+void CThreeDModel::MoveOriginToMin() {
+	if (m_pvVertices == nullptr) return;
+
+	double minX, minY, minZ, maxX, maxY, maxZ;
+	this->CalcBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+
+	Vector3d minPoint(minX, minY, minZ);
+
+	for (int count = 0; count < m_iNumberOfVertices; count++) {
+		m_pvVertices[count] = m_pvVertices[count] - minPoint;
+	}
+
+	this->CalcCentrePoint();
+}
+
 /*
  *	Method	: InitVBO
  *
@@ -782,9 +797,10 @@ void CThreeDModel::DrawElementsUsingVBO(Shader * myShader)
 	for (auto i = m_vuiFaceIndexRangeForTrisWithSameTexture.begin(); i != m_vuiFaceIndexRangeForTrisWithSameTexture.end(); ++i)
 	{
 		glActiveTexture(GL_TEXTURE0);
+		glEnable(GL_NORMALIZE);
 		glBindTexture(GL_TEXTURE_2D, std::get<2>(*i));
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_puiVBOs[NUM_OF_VBOS_WITHOUT_TRI_IDS + (triIDVBOCounter++)]);
 

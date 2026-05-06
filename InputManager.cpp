@@ -28,7 +28,7 @@ void InputManager::handle_input_up(const int key, int x, int y) {
     keys[key + 256] = false;
 }
 
-void InputManager::update() {
+void InputManager::update(int time_elapsed) {
     for (const auto&[key, func] : functions) {
         if (keys[key]) {
             func();

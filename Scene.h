@@ -8,6 +8,7 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
+#include "CoasterTrack.h"
 #include "SceneData.h"
 using json = nlohmann::json;
 
@@ -32,14 +33,23 @@ public:
 
     Scene(int screen_width, int screen_height, json json_data);
 
-    void update();
-    void update_view();
+    void update(int time_elapsed);
+    void update_view(int time_elapsed);
     void render() const;
 
     void add_object(const std::shared_ptr<SceneObject>& obj);
     void add_objects(const std::vector<std::shared_ptr<SceneObject>>& given_objects);
 
-    void set_on_update(const std::function<void()> &func);
+    void remove_object(const std::shared_ptr<SceneObject>& obj);
+    void remove_objects(const std::vector<std::shared_ptr<SceneObject>>& given_objects);
+
+    void add_coaster(std::shared_ptr<CoasterTrack> coaster);
+    void remove_coaster(const std::shared_ptr<CoasterTrack> &coaster);
+
+    void add_track_to_coaster(const std::shared_ptr<CoasterTrack>& coaster, CoasterTrack::TrackType type);
+    void pop_track_from_coaster(const std::shared_ptr<CoasterTrack>& coaster);
+
+    void set_on_update(const std::function<void(int)> &func);
 
     void move(Direction direction, float amount);
     void rotate(Axis axis, float given_rotation);
@@ -49,9 +59,10 @@ public:
     [[nodiscard]] float get_speed() const;
 
 private:
+    std::vector<std::shared_ptr<CoasterTrack>> coasters;
     std::vector<std::shared_ptr<SceneObject>> objects;
 
-    std::function<void()> on_update;
+    std::function<void(int)> on_update;
 
     SceneData scene_config;
 

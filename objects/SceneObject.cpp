@@ -70,8 +70,8 @@ glm::mat4 SceneObject::handle_rotation(glm::mat4 model_view_matrix) const {
 }
 
 void SceneObject::handle_location(const glm::mat4 & view, const glm::mat4 & projection) const {
-    glm::mat4 model_view_matrix = view * model_matrix;
-    model_view_matrix = handle_rotation(model_view_matrix);
+    glm::mat4 rotated_model = handle_rotation(model_matrix);
+    glm::mat4 model_view_matrix = view * rotated_model;
     glm::mat3 normal_matrix = glm::transpose(glm::inverse(model_view_matrix));
     glUniformMatrix4fv(shader->getProjLocation(), 1, GL_FALSE, &projection[0][0]);
     glUniformMatrix4fv(shader->getModelViewLocation(), 1, GL_FALSE, &model_view_matrix[0][0]);

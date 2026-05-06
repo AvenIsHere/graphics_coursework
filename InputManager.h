@@ -28,7 +28,7 @@ public:
     static void handle_input_down(int key, int x, int y);
     static void handle_input_up(int key, int x, int y);
 
-    static void update();
+    static void update(int time_elapsed);
 
     static void add_to_map(int key, std::function<void()> func, bool special=false);
     static void add_mappings(const std::vector<InputMapping>& mappings);
