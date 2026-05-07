@@ -101,36 +101,46 @@ int main(const int argc, char** argv) {
     ModelObject::add_models({
         {"rollercoaster_cart",{"rollercoaster_models/carts/red.obj", "BasicView", "model"}},
         {"STRAIGHT",{"rollercoaster_models/tracks/straight.obj", "BasicView", "model"}},
-        {"BEND",{"rollercoaster_models/tracks/bend.obj", "BasicView", "model"}},
-        {"LOOP",{"rollercoaster_models/tracks/loop.obj", "BasicView", "model"}}
+        {"LEFT",{"rollercoaster_models/tracks/left.obj", "BasicView", "model"}},
+        {"RIGHT",{"rollercoaster_models/tracks/bend.obj", "BasicView", "model"}},
+        {"LOOP",{"rollercoaster_models/tracks/loop.obj", "BasicView", "model"}},
+        {"STEP_UP", {"rollercoaster_models/tracks/step_up.obj", "BasicView", "model"}},
+        {"STEP_DOWN", {"rollercoaster_models/tracks/step_down.obj", "BasicView", "model"}}
     });
 
     CoasterTrack::new_tracks({
     {CoasterTrack::TrackType::STRAIGHT, {"STRAIGHT", 0.0f, {0, 0.65, 1.37}, {6.38, 0.65, 1.37}}},
-    {CoasterTrack::TrackType::LEFT, {"BEND", glm::radians(90.0f)}},
-    {CoasterTrack::TrackType::RIGHT, {"BEND", glm::radians(-90.0f), {0, 0.65, 1.36}, {2.38, 0.65, 3.74}}},
-    {CoasterTrack::TrackType::LOOP, {"LOOP", 0.0f, {0, 0.65, 1.37}, {12.73, 0.65, 6.24}}}
+    {CoasterTrack::TrackType::LEFT, {"LEFT", glm::radians(90.0f), {0, 0.65, 2.38}, {2.38, 0.65, 0}}},
+    {CoasterTrack::TrackType::RIGHT, {"RIGHT", glm::radians(-90.0f), {0, 0.65, 1.36}, {2.38, 0.65, 3.74}}},
+    {CoasterTrack::TrackType::LOOP, {"LOOP", 0.0f, {0, 0.65, 1.37}, {12.73, 0.65, 6.24}}},
+    {CoasterTrack::TrackType::STEP_UP, {"STEP_UP", 0.0f, {0, 0.65, 1.37}, {6.38, 4.06, 1.37}}},
+        {CoasterTrack::TrackType::STEP_DOWN, {"STEP_DOWN", 0.0f, {0, 4.06, 1.37}, {6.38, 0.65, 1.37}}}
     });
 
     auto coaster = std::make_shared<CoasterTrack>(CoasterTrack({
         CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::LOOP,
-        CoasterTrack::TrackType::RIGHT,
+        CoasterTrack::TrackType::STEP_UP,
         CoasterTrack::TrackType::RIGHT,
         CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STEP_UP,
+        CoasterTrack::TrackType::STEP_DOWN,
+        CoasterTrack::TrackType::STEP_DOWN,
         CoasterTrack::TrackType::RIGHT,
         CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
         CoasterTrack::TrackType::RIGHT,
-        CoasterTrack::TrackType::LOOP,
+        CoasterTrack::TrackType::STEP_DOWN,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STEP_UP,
+        CoasterTrack::TrackType::RIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+
     }, {-20, 1, -60}));
 
     Application::scene->add_coaster(coaster);
@@ -148,7 +158,7 @@ int main(const int argc, char** argv) {
         cart->rotate(0.02, glm::vec3(0, 1, 0));
     });
 
-    InputManager::add_mappings({
+    InputManager::add_hold_mappings({
         // movement
         {'w', []{Application::scene->move(Scene::FORWARDS, Application::scene->get_speed());}},
         {'s', []{Application::scene->move(Scene::BACKWARDS, Application::scene->get_speed());}},
@@ -165,13 +175,20 @@ int main(const int argc, char** argv) {
 
         // exit on esc
         {27, []{glutLeaveMainLoop();}},
+    });
 
+    InputManager::add_tap_mappings({
         // edit track
         {'1', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::STRAIGHT);}},
         {'2', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::LEFT);}},
         {'3', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::RIGHT);}},
         {'4', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::LOOP);}},
-        {8, [coaster]{Application::scene->pop_track_from_coaster(coaster);}}
+        {'5', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::STEP_UP);}},
+        {'6', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::STEP_DOWN);}},
+        {8, [coaster]{Application::scene->pop_track_from_coaster(coaster);}},
+
+        {'p', [coaster]{coaster->save_to_file();}},
+        {'l', [coaster]{Application::scene->load_coaster_from_file(coaster);}}
     });
 
     Application::run();

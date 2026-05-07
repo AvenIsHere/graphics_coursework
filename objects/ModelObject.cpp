@@ -18,6 +18,8 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->model_matrix = GlmMaths::pos_to_translation(position);
     this->model_matrix = glm::scale(model_matrix, scale);
 
+    this->position = position;
+
     const auto c_obj_loader = std::make_unique<COBJLoader>();
     if (!c_obj_loader->LoadModel(model_path)) {
         std::cerr << "Could not find model at " << model_path << std::endl;

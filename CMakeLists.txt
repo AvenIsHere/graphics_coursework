@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.1)
 project(graphics_coursework)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
@@ -9,6 +9,22 @@ find_package(glm CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
 
 find_library(FREEIMAGE_LIB FreeImage)
+
+include(FetchContent)
+
+FetchContent_Declare(
+        magic_enum
+        GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
+        GIT_TAG        v0.9.8
+)
+FetchContent_MakeAvailable(magic_enum)
+
+FetchContent_Declare(
+        nativefiledialog-extended
+        GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended
+        GIT_TAG        v1.3.0
+)
+FetchContent_MakeAvailable(nativefiledialog-extended)
 
 include_directories(${GLUT_INCLUDE_DIR} ${OPENGL_INCLUDE_DIRS})
 
@@ -44,7 +60,7 @@ add_executable(graphics_coursework main.cpp
         CoasterTrack.h
 )
 
-target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES} freeimage)
+target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES} freeimage magic_enum::magic_enum nfd)
 
 add_custom_target(copy-files
         COMMAND ${CMAKE_COMMAND} -E copy_directory

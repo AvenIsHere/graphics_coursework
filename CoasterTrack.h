@@ -19,6 +19,8 @@ public:
         RIGHT,
         LEFT,
         LOOP,
+        STEP_UP,
+        STEP_DOWN,
     };
 
     struct TrackData {
@@ -28,16 +30,22 @@ public:
         glm::vec3 end_point;
     };
 
-    explicit CoasterTrack(std::vector<TrackType> givenTrack, glm::vec3 displacement);
+    explicit CoasterTrack(const std::vector<TrackType> &givenTrack, glm::vec3 displacement);
     explicit CoasterTrack(glm::vec3 displacement);
 
     static void new_track(std::pair<TrackType, TrackData> given_track);
     static void new_tracks(const std::unordered_map<TrackType, TrackData>& given_tracks);
 
+    void save_to_file() const;
+    std::vector<std::shared_ptr<SceneObject>> load_from_file();
+
+    static std::vector<TrackType> parse_txt_file(const std::string& file_path);
+
     std::shared_ptr<SceneObject> add_track(TrackType given_track);
     std::vector<std::shared_ptr<SceneObject>> add_tracks(const std::vector<TrackType>& given_tracks);
 
-    std::optional<TrackType> pop_track();
+    std::shared_ptr<SceneObject> pop_track();
+    std::vector<std::shared_ptr<SceneObject>> clear_tracks();
 
     [[nodiscard]] std::vector<std::shared_ptr<SceneObject>> get_model_objs();
 
@@ -54,8 +62,6 @@ private:
 
     [[nodiscard]] glm::vec3 rotation_vec(glm::vec3 direction) const;
     void handle_movement(TrackType type, bool undo);
-
-    static constexpr float STANDARD_WIDTH = 2.73985;
 };
 
 

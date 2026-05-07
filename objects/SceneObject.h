@@ -32,6 +32,7 @@ public:
 
     virtual glm::vec3 get_aabb_dimensions() = 0;
 
+    bool colliding(glm::vec3 start_point, glm::vec3 end_point) const;
 
     void handle_lighting(const glm::mat4 & view, SceneData::Light light) const;
     void handle_material() const;
@@ -55,6 +56,8 @@ protected:
     static std::unordered_map<std::string, std::shared_ptr<MaterialData>> materials;
 
     glm::vec3 aabb_dimensions;
+
+    glm::vec3 position;
 };
 
 

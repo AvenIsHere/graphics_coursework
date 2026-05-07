@@ -56,7 +56,7 @@ void Scene::remove_objects(const std::vector<std::shared_ptr<SceneObject> > &giv
     }
 }
 
-void Scene::add_coaster(std::shared_ptr<CoasterTrack> coaster) {
+void Scene::add_coaster(const std::shared_ptr<CoasterTrack>& coaster) {
     coasters.emplace_back(coaster);
     add_objects(coaster->get_model_objs());
 }
@@ -70,17 +70,20 @@ void Scene::remove_coaster(const std::shared_ptr<CoasterTrack> &coaster) {
 
 void Scene::add_track_to_coaster(const std::shared_ptr<CoasterTrack> &coaster, CoasterTrack::TrackType type) {
     if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
-        remove_objects(coaster->get_model_objs());
-        coaster->add_track(type);
-        add_objects(coaster->get_model_objs());
+        add_object(coaster->add_track(type));
     }
 }
 
 void Scene::pop_track_from_coaster(const std::shared_ptr<CoasterTrack> &coaster) {
     if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
+        remove_object(coaster->pop_track());
+    }
+}
+
+void Scene::load_coaster_from_file(const std::shared_ptr<CoasterTrack> &coaster) {
+    if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
         remove_objects(coaster->get_model_objs());
-        coaster->pop_track();
-        add_objects(coaster->get_model_objs());
+        add_objects(coaster->load_from_file());
     }
 }
 
@@ -88,9 +91,11 @@ void Scene::set_on_update(const std::function<void(int)> &func) {
     on_update = func;
 }
 
-void Scene::move(const Direction direction, float amount) {
+void Scene::move(const Direction direction, const float amount) {
     const float x_dir = std::sin(scene_config.rotation["x"]);
     const float z_dir = -std::cos(scene_config.rotation["x"]);
+
+    const glm::vec3 prev_pos = scene_config.camera_pos;
 
     switch (direction) {
         case FORWARDS:
@@ -114,6 +119,12 @@ void Scene::move(const Direction direction, float amount) {
             break;
         case DOWN:
             scene_config.camera_pos.y -= amount;
+    }
+
+    for (const auto& obj : objects) {
+        if (obj->colliding(scene_config.camera_pos, scene_config.camera_pos)) {
+            scene_config.camera_pos = prev_pos;
+        }
     }
 }
 

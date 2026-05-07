@@ -15,8 +15,10 @@ struct InputMapping {
 
 class InputManager {
 
-    static std::unordered_map<int, bool> keys;
-    static std::map<int, std::function<void()>> functions;
+    static std::unordered_map<int, bool> hold_keys;
+    static std::map<int, std::function<void()>> hold_functions;
+
+    static std::map<int, std::function<void()>> tap_functions;
 
 public:
 
@@ -30,8 +32,11 @@ public:
 
     static void update(int time_elapsed);
 
-    static void add_to_map(int key, std::function<void()> func, bool special=false);
-    static void add_mappings(const std::vector<InputMapping>& mappings);
+    static void add_hold_mapping(int key, std::function<void()> func, bool special=false);
+    static void add_hold_mappings(const std::vector<InputMapping>& mappings);
+
+    static void add_tap_mapping(int key, std::function<void()> func, bool special=false);
+    static void add_tap_mappings(const std::vector<InputMapping>& mappings);
 };
 
 

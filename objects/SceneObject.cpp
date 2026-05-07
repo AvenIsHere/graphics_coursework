@@ -85,6 +85,7 @@ void SceneObject::move(const glm::vec3 direction) {
     rotate = glm::rotate(rotate, rotation.y, glm::vec3(0,1,0));
     rotate = glm::rotate(rotate, rotation.z, glm::vec3(0,0,1));
     const auto rotate_matrix = glm::vec3(rotate * glm::vec4(direction, 0.0f));
+    position = rotate_matrix;
     this->model_matrix = glm::translate(this->model_matrix, rotate_matrix);
 }
 
@@ -93,4 +94,13 @@ void SceneObject::rotate(const float angle, const glm::vec3 axis) {
     for (int i = 0; i < glm::vec3::length(); i++) {
         rotation[i] = std::fmod(rotation[i], static_cast<float>(2*std::numbers::pi));
     }
+    move({0,0,0});
+}
+
+bool SceneObject::colliding(glm::vec3 obj_start, glm::vec3 obj_end) const {
+    const auto this_start = position;
+    const auto this_end = position + aabb_dimensions;
+    return ((this_start.x <= obj_end.x && this_end.x >= obj_start.x) &&
+        (this_start.y <= obj_end.y && this_end.y >= obj_start.y) &&
+        (this_start.z <= obj_end.z && this_end.z >= obj_start.z));
 }

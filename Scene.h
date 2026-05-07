@@ -43,11 +43,12 @@ public:
     void remove_object(const std::shared_ptr<SceneObject>& obj);
     void remove_objects(const std::vector<std::shared_ptr<SceneObject>>& given_objects);
 
-    void add_coaster(std::shared_ptr<CoasterTrack> coaster);
+    void add_coaster(const std::shared_ptr<CoasterTrack>& coaster);
     void remove_coaster(const std::shared_ptr<CoasterTrack> &coaster);
 
     void add_track_to_coaster(const std::shared_ptr<CoasterTrack>& coaster, CoasterTrack::TrackType type);
     void pop_track_from_coaster(const std::shared_ptr<CoasterTrack>& coaster);
+    void load_coaster_from_file(const std::shared_ptr<CoasterTrack>& coaster);
 
     void set_on_update(const std::function<void(int)> &func);
 
