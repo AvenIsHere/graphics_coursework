@@ -85,7 +85,7 @@ void SceneObject::move(const glm::vec3 direction) {
     rotate = glm::rotate(rotate, rotation.y, glm::vec3(0,1,0));
     rotate = glm::rotate(rotate, rotation.z, glm::vec3(0,0,1));
     const auto rotate_matrix = glm::vec3(rotate * glm::vec4(direction, 0.0f));
-    position = rotate_matrix;
+    position += rotate_matrix;
     this->model_matrix = glm::translate(this->model_matrix, rotate_matrix);
 }
 

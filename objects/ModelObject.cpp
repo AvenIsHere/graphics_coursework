@@ -20,6 +20,8 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
 
     this->position = position;
 
+    this->scale = scale;
+
     const auto c_obj_loader = std::make_unique<COBJLoader>();
     if (!c_obj_loader->LoadModel(model_path)) {
         std::cerr << "Could not find model at " << model_path << std::endl;
@@ -46,7 +48,9 @@ ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position
 glm::vec3 ModelObject::get_aabb_dimensions() {
     double min_x, max_x, min_y, max_y, min_z, max_z;
     three_d_model_->CalcBoundingBox(min_x, min_y, min_z, max_x, max_y, max_z);
-    return {max_x-min_x, max_y-min_y, max_z-min_z};
+    glm::vec3 return_scale = {max_x-min_x, max_y-min_y, max_z-min_z};
+    return_scale *= scale;
+    return return_scale;
 }
 
 void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, SceneData::Light light_data) const {

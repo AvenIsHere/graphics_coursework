@@ -122,7 +122,7 @@ void Scene::move(const Direction direction, const float amount) {
     }
 
     for (const auto& obj : objects) {
-        if (obj->colliding(scene_config.camera_pos, scene_config.camera_pos)) {
+        if (obj->colliding(scene_config.camera_pos - glm::vec3{0.1}, scene_config.camera_pos + glm::vec3{0.1})) {
             scene_config.camera_pos = prev_pos;
         }
     }

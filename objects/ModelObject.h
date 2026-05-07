@@ -24,6 +24,8 @@ private:
 
     static std::map<std::string, Model> models;
 
+    glm::vec3 scale{};
+
 public:
     explicit ModelObject(const std::string &model_path, const std::string &shader_name, glm::vec3 position, glm::vec3 scale, const std::string& material_name);
     explicit ModelObject(const std::string& model_name, glm::vec3 position, glm::vec3 dimensions);
