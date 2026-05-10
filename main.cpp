@@ -73,7 +73,7 @@ namespace Application {
 }
 
 int main(const int argc, char** argv) {
-    Application::init(argc, argv, Application::SCREEN_WIDTH, Application::SCREEN_HEIGHT, "scene_config.json");
+    Application::init(argc, argv, Application::SCREEN_WIDTH, Application::SCREEN_HEIGHT, "config/scene_config.json");
 
     SceneObject::add_shaders({
         {"BasicView", "glsl_files/basicTransformations.vert", "glsl_files/basicTransformations.frag"},
@@ -135,10 +135,32 @@ int main(const int argc, char** argv) {
         CoasterTrack::TrackType::RIGHT,
         CoasterTrack::TrackType::STEP_DOWN,
         CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STEP_UP,
         CoasterTrack::TrackType::RIGHT,
         CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::LOOP,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::LEFT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::LEFT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::LOOP,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::LEFT,
+        CoasterTrack::TrackType::STRAIGHT,
+        CoasterTrack::TrackType::STEP_UP,
+        CoasterTrack::TrackType::LEFT,
         CoasterTrack::TrackType::STRAIGHT,
 
     }, {-20, 1, -60}));

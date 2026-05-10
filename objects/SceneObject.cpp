@@ -47,7 +47,7 @@ std::shared_ptr<SceneObject::MaterialData> SceneObject::get_material(const std::
     return materials.at(name);
 }
 
-void SceneObject::handle_lighting(const glm::mat4 & view, SceneData::Light light) const {
+void SceneObject::handle_lighting(const glm::mat4 & view, Scene::Light light) const {
     light.pos = view * light.pos;
     glUniform4fv(glGetUniformLocation(shader->handle(), "LightPos"), 1, &light.pos[0]);
     glUniform4fv(glGetUniformLocation(shader->handle(), "light_ambient"), 1, light.ambient.data());

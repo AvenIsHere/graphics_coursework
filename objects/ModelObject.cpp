@@ -53,7 +53,7 @@ glm::vec3 ModelObject::get_aabb_dimensions() {
     return return_scale;
 }
 
-void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, SceneData::Light light_data) const {
+void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, Scene::Light light_data) const {
     glUseProgram(shader->handle());
     glUniform1i(glGetUniformLocation(shader->handle(), "useTexture"), true);
 

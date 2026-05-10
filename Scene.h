@@ -31,7 +31,14 @@ public:
         Y,
     };
 
-    Scene(int screen_width, int screen_height, json json_data);
+    struct Light {
+        glm::vec4 pos;
+        std::array<float, 4> ambient;
+        std::array<float, 4> diffuse;
+        std::array<float, 4> specular;
+    };
+
+    Scene(int screen_width, int screen_height, const json& given_json_data);
 
     void update(int time_elapsed);
     void update_view(int time_elapsed);
@@ -65,7 +72,17 @@ private:
 
     std::function<void(int)> on_update;
 
-    SceneData scene_config;
+    json json_data;
+    void load_config(const json& given_json_data);
+
+    glm::vec3 camera_pos{};
+    glm::vec3 rotation{};
+    float speed{};
+
+    glm::mat4 view_matrix{};
+    glm::mat4 proj_matrix{};
+
+    Light light{};
 
     int screen_width;
     int screen_height;

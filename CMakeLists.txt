@@ -54,8 +54,6 @@ add_executable(graphics_coursework main.cpp
         objects/ModelObject.cpp
         objects/ModelObject.h
         objects/ModelObject.cpp
-        SceneData.cpp
-        SceneData.h
         CoasterTrack.cpp
         CoasterTrack.h
 )
@@ -75,14 +73,14 @@ add_custom_target(rollercoaster-models
 )
 
 add_custom_command(
-        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/scene_config.json"
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/config/scene_config.json"
         COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/scene_config.json"
-            "${CMAKE_CURRENT_BINARY_DIR}/scene_config.json"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/scene_config.json"
+            "${CMAKE_CURRENT_SOURCE_DIR}/config/scene_config.json"
+            "${CMAKE_CURRENT_BINARY_DIR}/config/scene_config.json"
+        DEPENDS "config/scene_config.json"
 )
 
-add_custom_target(update_config ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/scene_config.json")
+add_custom_target(update_config ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/config/scene_config.json")
 add_dependencies(graphics_coursework update_config)
 
 add_dependencies(graphics_coursework copy-files rollercoaster-models)

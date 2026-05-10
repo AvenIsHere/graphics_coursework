@@ -10,7 +10,7 @@ Cuboid::Cuboid(const glm::vec3 position, const glm::vec3 dimensions, const std::
     const glm::mat4 model = GlmMaths::pos_to_translation(position);
     this->model_matrix = glm::scale(model, dimensions / (UNIT_SIZE * 2));
 
-    this-> position = position;
+    this-> position = position - dimensions / 2.0f;
 }
 
 glm::vec3 Cuboid::get_aabb_dimensions() {

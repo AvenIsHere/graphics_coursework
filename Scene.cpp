@@ -13,13 +13,14 @@
 #include <random>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-#include <utility>
 
 #include "objects/Cuboid.h"
 
-Scene::Scene(const int screen_width, const int screen_height, json json_data) : scene_config(screen_width, screen_height, std::move(json_data)) {
+Scene::Scene(const int screen_width, const int screen_height, const json& given_json_data) {
     this->screen_width = screen_width;
     this->screen_height = screen_height;
+
+    load_config(given_json_data);
 
     glutReshapeWindow(screen_width, screen_height);
 }
@@ -28,7 +29,7 @@ void Scene::render() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const auto & object : objects) {
-        object->draw(scene_config.view_matrix, scene_config.proj_matrix, scene_config.light);
+        object->draw(view_matrix, proj_matrix, light);
     }
 
     glutSwapBuffers();
@@ -92,58 +93,50 @@ void Scene::set_on_update(const std::function<void(int)> &func) {
 }
 
 void Scene::move(const Direction direction, const float amount) {
-    const float x_dir = std::sin(scene_config.rotation["x"]);
-    const float z_dir = -std::cos(scene_config.rotation["x"]);
-
-    const glm::vec3 prev_pos = scene_config.camera_pos;
+    const float x_dir = std::sin(rotation.x);
+    const float z_dir = -std::cos(rotation.x);
 
     switch (direction) {
         case FORWARDS:
-            scene_config.camera_pos.x += x_dir * amount;
-            scene_config.camera_pos.z += z_dir * amount;
+            camera_pos.x += x_dir * amount;
+            camera_pos.z += z_dir * amount;
             break;
         case BACKWARDS:
-            scene_config.camera_pos.x -= x_dir * amount;
-            scene_config.camera_pos.z -= z_dir * amount;
+            camera_pos.x -= x_dir * amount;
+            camera_pos.z -= z_dir * amount;
             break;
         case LEFT:
-            scene_config.camera_pos.x -= std::cos(scene_config.rotation["x"]) * amount;
-            scene_config.camera_pos.z -= std::sin(scene_config.rotation["x"]) * amount;
+            camera_pos.x -= std::cos(rotation.x) * amount;
+            camera_pos.z -= std::sin(rotation.x) * amount;
             break;
         case RIGHT:
-            scene_config.camera_pos.x += std::cos(scene_config.rotation["x"]) * amount;
-            scene_config.camera_pos.z += std::sin(scene_config.rotation["x"]) * amount;
+            camera_pos.x += std::cos(rotation.x) * amount;
+            camera_pos.z += std::sin(rotation.x) * amount;
             break;
         case UP:
-            scene_config.camera_pos.y += amount;
+            camera_pos.y += amount;
             break;
         case DOWN:
-            scene_config.camera_pos.y -= amount;
-    }
-
-    for (const auto& obj : objects) {
-        if (obj->colliding(scene_config.camera_pos - glm::vec3{0.1}, scene_config.camera_pos + glm::vec3{0.1})) {
-            scene_config.camera_pos = prev_pos;
-        }
+            camera_pos.y -= amount;
     }
 }
 
 void Scene::rotate(const Axis axis, const float given_rotation) {
     switch (axis) {
         case X:
-            scene_config.rotation["x"] += given_rotation;
+            rotation.x += given_rotation;
             break;
         case Y:
-            scene_config.rotation["y"] += given_rotation;
+            rotation.y += given_rotation;
             break;
     }
 }
 
 void Scene::update_view(int time_elapsed) {
     auto view = glm::mat4(1.0f);
-    view = glm::rotate(view, scene_config.rotation["y"], glm::vec3(1.0f, 0.0f, 0.0f));
-    view = glm::rotate(view, scene_config.rotation["x"], glm::vec3(0.0f, 1.0f, 0.0f));
-    scene_config.view_matrix = glm::translate(view, -scene_config.camera_pos);
+    view = glm::rotate(view, rotation.y, glm::vec3(1.0f, 0.0f, 0.0f));
+    view = glm::rotate(view, rotation.x, glm::vec3(0.0f, 1.0f, 0.0f));
+    view_matrix = glm::translate(view, -camera_pos);
 }
 
 void Scene::update(const int time_elapsed) {
@@ -153,11 +146,43 @@ void Scene::update(const int time_elapsed) {
 }
 
 float Scene::get_speed() const {
-    return scene_config.speed;
+    return speed;
 }
 
 void Scene::screen_resize(const int width, const int height) {
     const float aspect = static_cast<float>(width) / static_cast<float>(height);
-    scene_config.proj_matrix = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+    proj_matrix = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
     glViewport(0, 0, width, height);
+}
+
+void Scene::load_config(const json& given_json_data) {
+    this->json_data = given_json_data;
+
+    const float screen_aspect = static_cast<float>(screen_width) / static_cast<float>(screen_height);
+
+    // camera
+    camera_pos = glm::vec3(
+        json_data["camera-pos"]["x"],
+        json_data["camera-pos"]["y"],
+        json_data["camera-pos"]["z"]);
+    rotation = {
+        json_data["camera-rotation"]["x"],
+        json_data["camera-rotation"]["y"],
+        json_data["camera-rotation"]["z"]
+    };
+    speed = json_data["camera-speed"];
+    view_matrix = GlmMaths::pos_to_translation(camera_pos);
+    proj_matrix = glm::perspective(glm::radians(45.0f), screen_aspect, 0.1f, 1000.0f);
+
+    // lighting
+    light.pos = glm::vec4(
+        json_data["light-pos"]["x"],
+        json_data["light-pos"]["y"],
+        json_data["light-pos"]["z"],
+        json_data["light-pos"]["w"]);
+    for (int i = 0; i < 4; i++) {
+        light.ambient[i] = json_data["light-ambient"][i];
+        light.diffuse[i] = json_data["light-diffuse"][i];
+        light.specular[i] = json_data["light-specular"][i];
+    }
 }
