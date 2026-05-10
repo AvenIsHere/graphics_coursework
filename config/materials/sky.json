@@ -1,0 +1,7 @@
+{
+  "name": "sky",
+  "material_ambient": [0.529, 0.808, 0.922, 1.0],
+  "material_diffuse": [0.529, 0.808, 0.922, 1.0],
+  "material_specular": [0.1, 0.08, 0.05, 1.0],
+  "material_shininess": 0
+}

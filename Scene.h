@@ -46,7 +46,7 @@ public:
     void add_coaster(const std::shared_ptr<CoasterTrack>& coaster);
     void remove_coaster(const std::shared_ptr<CoasterTrack> &coaster);
 
-    void add_track_to_coaster(const std::shared_ptr<CoasterTrack>& coaster, CoasterTrack::TrackType type);
+    void add_track_to_coaster(const std::shared_ptr<CoasterTrack>& coaster, const std::string &type);
     void pop_track_from_coaster(const std::shared_ptr<CoasterTrack>& coaster);
     void load_coaster_from_file(const std::shared_ptr<CoasterTrack>& coaster);
 

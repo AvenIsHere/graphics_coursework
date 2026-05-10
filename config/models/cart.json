@@ -1,0 +1,6 @@
+{
+  "name": "cart",
+  "model_path": "rollercoaster_models/carts/red.obj",
+  "shader_name": "model",
+  "material_name": "model"
+}

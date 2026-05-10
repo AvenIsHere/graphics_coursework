@@ -73,15 +73,10 @@ add_custom_target(rollercoaster-models
         "${CMAKE_CURRENT_BINARY_DIR}/rollercoaster_models"
 )
 
-add_custom_command(
-        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/config/scene_config.json"
-        COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/config/scene_config.json"
-            "${CMAKE_CURRENT_BINARY_DIR}/config/scene_config.json"
-        DEPENDS "config/scene_config.json"
+add_custom_target(copy-config
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/config"
+        "${CMAKE_CURRENT_BINARY_DIR}/config"
 )
 
-add_custom_target(update_config ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/config/scene_config.json")
-add_dependencies(graphics_coursework update_config)
-
-add_dependencies(graphics_coursework copy-files rollercoaster-models)
+add_dependencies(graphics_coursework copy-files rollercoaster-models copy-config)

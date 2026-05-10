@@ -3,7 +3,6 @@
 #include <GL/freeglut_ext.h>
 #include <glm/glm.hpp>
 
-#include <array>
 #include <fstream>
 #include <iostream>
 #include <functional>
@@ -46,6 +45,55 @@ namespace Application {
         scene->screen_resize(width, height);
     }
 
+    void load_shaders_json(const std::string &shaders_folder) {
+        for (const auto& file : std::filesystem::directory_iterator(shaders_folder)) {
+            json shader_json = get_json(file.path());
+            SceneObject::add_shader(shader_json["name"], shader_json["vert_path"], shader_json["frag_path"]);
+        }
+    }
+
+    void load_materials_json(const std::string &materials_folder) {
+        for (const auto& file : std::filesystem::directory_iterator(materials_folder)) {
+            json material_json = get_json(file.path());
+            SceneObject::add_material(material_json["name"], {material_json["material_ambient"], material_json["material_diffuse"], material_json["material_specular"], material_json["material_shininess"]});
+        }
+    }
+
+    void load_models_json(const std::string &models_folder) {
+        for (const auto& file : std::filesystem::directory_iterator(models_folder)) {
+            json model = get_json(file.path());
+            ModelObject::add_model(model["name"], {model["model_path"], model["shader_name"], model["material_name"]});
+        }
+    }
+
+    void load_tracks_json(const std::string &tracks_folder) {
+        for (const auto& file : std::filesystem::directory_iterator(tracks_folder)) {
+            json track = get_json(file.path());
+            CoasterTrack::new_track({track["name"], CoasterTrack::TrackData{track["piece_model"], glm::radians(static_cast<float>(track["rotation"])), {track["start_point"][0], track["start_point"][1], track["start_point"][2]}, {track["end_point"][0], track["end_point"][1], track["end_point"][2]}}});
+        }
+    }
+
+    void load_objects_json(const std::string &objects_folder) {
+        for (const auto& file : std::filesystem::directory_iterator(objects_folder)) {
+            json object = get_json(file.path());
+            if (object["obj_type"] == "Cuboid") {
+                scene->add_object(std::make_shared<Cuboid>(glm::vec3{object["position"][0], object["position"][1], object["position"][2]}, glm::vec3{object["dimensions"][0], object["dimensions"][1], object["dimensions"][2]}, object["shader_name"], object["material_name"]));
+            }
+        }
+    }
+
+    void load_from_json(const std::string& shaders_folder, const std::string& materials_folder, const std::string& models_folder, const std::string &tracks_folder, const std::string &objects_folder) {
+        load_shaders_json(shaders_folder);
+        load_materials_json(materials_folder);
+        load_models_json(models_folder);
+        load_tracks_json(tracks_folder);
+        load_objects_json(objects_folder);
+    }
+
+    std::shared_ptr<CoasterTrack> load_default_coaster() {
+        return std::make_shared<CoasterTrack>("config/default_coaster.json", glm::vec3{-20, 1, -60});
+    }
+
     void init(int argc, char** argv, int screen_width, int screen_height, const std::string& scene_config) {
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -74,104 +122,13 @@ namespace Application {
 
 int main(const int argc, char** argv) {
     Application::init(argc, argv, Application::SCREEN_WIDTH, Application::SCREEN_HEIGHT, "config/scene_config.json");
+    Application::load_from_json("config/shaders", "config/materials", "config/models", "config/tracks", "config/objects");
 
-    SceneObject::add_shaders({
-        {"BasicView", "glsl_files/basicTransformations.vert", "glsl_files/basicTransformations.frag"},
-        {"Cuboid", "glsl_files/basic.vert", "glsl_files/basic.frag"}
-    });
-
-    SceneObject::add_materials({
-        {"sky", {
-        {0.529f, 0.808f, 0.922f, 1.0f},
-        {0.529f, 0.808f, 0.922f, 1.0f},
-        {0.1f, 0.08f, 0.05f, 1.0f},
-        0}},
-        {"grass", {
-        {0.0f, 0.6f, 0.1f, 1.0f},
-        {0.8f, 0.8f, 0.8f, 1.0f},
-        {0.5f, 0.5f, 0.5f, 1.0f},
-        5}},
-        {"model", {
-        {0.444f, 0.444f, 0.5f, 1.0f},
-        {0.8f, 0.8f, 0.9f, 0.1f},
-        {0.9f, 0.9f, 0.8f, 1.0f},
-        50}}
-    });
-
-    ModelObject::add_models({
-        {"rollercoaster_cart",{"rollercoaster_models/carts/red.obj", "BasicView", "model"}},
-        {"STRAIGHT",{"rollercoaster_models/tracks/straight.obj", "BasicView", "model"}},
-        {"LEFT",{"rollercoaster_models/tracks/left.obj", "BasicView", "model"}},
-        {"RIGHT",{"rollercoaster_models/tracks/bend.obj", "BasicView", "model"}},
-        {"LOOP",{"rollercoaster_models/tracks/loop.obj", "BasicView", "model"}},
-        {"STEP_UP", {"rollercoaster_models/tracks/step_up.obj", "BasicView", "model"}},
-        {"STEP_DOWN", {"rollercoaster_models/tracks/step_down.obj", "BasicView", "model"}}
-    });
-
-    CoasterTrack::new_tracks({
-    {CoasterTrack::TrackType::STRAIGHT, {"STRAIGHT", 0.0f, {0, 0.65, 1.37}, {6.38, 0.65, 1.37}}},
-    {CoasterTrack::TrackType::LEFT, {"LEFT", glm::radians(90.0f), {0, 0.65, 2.38}, {2.38, 0.65, 0}}},
-    {CoasterTrack::TrackType::RIGHT, {"RIGHT", glm::radians(-90.0f), {0, 0.65, 1.36}, {2.38, 0.65, 3.74}}},
-    {CoasterTrack::TrackType::LOOP, {"LOOP", 0.0f, {0, 0.65, 1.37}, {12.73, 0.65, 6.24}}},
-    {CoasterTrack::TrackType::STEP_UP, {"STEP_UP", 0.0f, {0, 0.65, 1.37}, {6.38, 4.06, 1.37}}},
-        {CoasterTrack::TrackType::STEP_DOWN, {"STEP_DOWN", 0.0f, {0, 4.06, 1.37}, {6.38, 0.65, 1.37}}}
-    });
-
-    auto coaster = std::make_shared<CoasterTrack>(CoasterTrack({
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STEP_UP,
-        CoasterTrack::TrackType::RIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STEP_UP,
-        CoasterTrack::TrackType::STEP_DOWN,
-        CoasterTrack::TrackType::STEP_DOWN,
-        CoasterTrack::TrackType::RIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::RIGHT,
-        CoasterTrack::TrackType::STEP_DOWN,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::RIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::LOOP,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::LEFT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::LEFT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::LOOP,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::LEFT,
-        CoasterTrack::TrackType::STRAIGHT,
-        CoasterTrack::TrackType::STEP_UP,
-        CoasterTrack::TrackType::LEFT,
-        CoasterTrack::TrackType::STRAIGHT,
-
-    }, {-20, 1, -60}));
-
+    auto coaster = Application::load_default_coaster();
     Application::scene->add_coaster(coaster);
 
-    auto cart = std::make_shared<ModelObject>("rollercoaster_cart", glm::vec3(0, 12, 20), glm::vec3(1,1,1));
-
+    auto cart = std::make_shared<ModelObject>("cart", glm::vec3(0, 12, 20), glm::vec3(1,1,1));
     Application::scene->add_objects({
-        std::make_shared<Cuboid>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(500, 500, 500), "BasicView", "sky"),
-        std::make_shared<Cuboid>(glm::vec3(0, -5, 0), glm::vec3(200.0, 1.0, 200.0), "BasicView", "grass"),
         cart
     });
 
@@ -201,12 +158,12 @@ int main(const int argc, char** argv) {
 
     InputManager::add_tap_mappings({
         // edit track
-        {'1', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::STRAIGHT);}},
-        {'2', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::LEFT);}},
-        {'3', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::RIGHT);}},
-        {'4', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::LOOP);}},
-        {'5', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::STEP_UP);}},
-        {'6', [coaster]{Application::scene->add_track_to_coaster(coaster, CoasterTrack::TrackType::STEP_DOWN);}},
+        {'1', [coaster]{Application::scene->add_track_to_coaster(coaster, "straight");}},
+        {'2', [coaster]{Application::scene->add_track_to_coaster(coaster, "left");}},
+        {'3', [coaster]{Application::scene->add_track_to_coaster(coaster, "right");}},
+        {'4', [coaster]{Application::scene->add_track_to_coaster(coaster, "loop");}},
+        {'5', [coaster]{Application::scene->add_track_to_coaster(coaster, "step_up");}},
+        {'6', [coaster]{Application::scene->add_track_to_coaster(coaster, "step_down");}},
         {8, [coaster]{Application::scene->pop_track_from_coaster(coaster);}},
 
         {'p', [coaster]{coaster->save_to_file();}},

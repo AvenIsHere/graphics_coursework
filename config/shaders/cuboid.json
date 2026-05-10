@@ -1,0 +1,5 @@
+{
+  "name": "cuboid",
+  "frag_path": "glsl_files/basic.frag",
+  "vert_path": "glsl_files/basic.vert"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "model",
+  "frag_path": "glsl_files/basicTransformations.frag",
+  "vert_path": "glsl_files/basicTransformations.vert"
+}

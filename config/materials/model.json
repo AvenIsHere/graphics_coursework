@@ -1,0 +1,7 @@
+{
+  "name": "model",
+  "material_ambient": [0.444, 0.444, 0.5, 1.0],
+  "material_diffuse": [0.8, 0.8, 0.9, 0.1],
+  "material_specular": [0.9, 0.9, 0.8, 1.0],
+  "material_shininess": 50
+}

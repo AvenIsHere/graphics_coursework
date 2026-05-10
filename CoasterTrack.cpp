@@ -11,14 +11,22 @@
 #include <magic_enum/magic_enum.hpp>
 #include <nfd.h>
 #include <regex>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 #include "nfd.hpp"
 
-std::unordered_map<CoasterTrack::TrackType, CoasterTrack::TrackData> CoasterTrack::tracks;
+std::unordered_map<std::string, CoasterTrack::TrackData> CoasterTrack::tracks;
 
-CoasterTrack::CoasterTrack(const std::vector<TrackType> &givenTrack, const glm::vec3 displacement) {
+CoasterTrack::CoasterTrack(const std::vector<std::string> &given_track, const glm::vec3 displacement) {
     position = displacement;
-    add_tracks(givenTrack);
+    add_tracks(given_track);
+}
+
+CoasterTrack::CoasterTrack(const std::string &json_path, glm::vec3 displacement) {
+    position = displacement;
+    add_tracks(parse_json(json_path));
 }
 
 CoasterTrack::CoasterTrack(const glm::vec3 displacement) {
@@ -27,17 +35,17 @@ CoasterTrack::CoasterTrack(const glm::vec3 displacement) {
     position = displacement;
 }
 
-void CoasterTrack::new_track(std::pair<TrackType, TrackData> given_track) {
+void CoasterTrack::new_track(std::pair<std::string, TrackData> given_track) {
     tracks.emplace(given_track);
 }
 
-void CoasterTrack::new_tracks(const std::unordered_map<TrackType, TrackData>& given_tracks) {
+void CoasterTrack::new_tracks(const std::unordered_map<std::string, TrackData>& given_tracks) {
     for (const auto& track : given_tracks) {
         new_track(track);
     }
 }
 
-std::shared_ptr<SceneObject> CoasterTrack::add_track(TrackType given_track) {
+std::shared_ptr<SceneObject> CoasterTrack::add_track(std::string given_track) {
     track.emplace_back(given_track);
     const auto& data = tracks.at(given_track);
     const glm::vec3 obj_origin = position - rotation_vec(data.start_point);
@@ -55,7 +63,7 @@ std::shared_ptr<SceneObject> CoasterTrack::add_track(TrackType given_track) {
     return object;
 }
 
-std::vector<std::shared_ptr<SceneObject>> CoasterTrack::add_tracks(const std::vector<TrackType>& given_tracks) {
+std::vector<std::shared_ptr<SceneObject>> CoasterTrack::add_tracks(const std::vector<std::string>& given_tracks) {
     std::vector<std::shared_ptr<SceneObject>> return_objects;
     for (const auto& given_track : given_tracks) {
         return_objects.emplace_back(add_track(given_track));
@@ -83,7 +91,7 @@ glm::vec3 CoasterTrack::rotation_vec(const glm::vec3 direction) const {
     return {rotate * glm::vec4(direction, 0.0f)};
 }
 
-void CoasterTrack::handle_movement(const TrackType type, bool undo) {
+void CoasterTrack::handle_movement(const std::string type, bool undo) {
     const auto& data = tracks.at(type);
     if (!undo) {
         position += rotation_vec(data.end_point - data.start_point);
@@ -98,11 +106,16 @@ void CoasterTrack::save_to_file() const {
     const auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     const auto time_now = std::localtime(&time);
     char buf[64];
-    std::strftime(buf, sizeof(buf), "coaster_%Y-%m-%d_%H-%M-%S.txt", time_now);
+    std::strftime(buf, sizeof(buf), "coaster_%Y-%m-%d_%H-%M-%S.json", time_now);
     std::ofstream save_file(buf);
+
+    json json_tracks = json::array();
     for (const auto& given_track : track) {
-        save_file << "CoasterTrack::TrackType::" << magic_enum::enum_name(given_track) << "," << std::endl;
+        json_tracks.push_back(given_track);
     }
+
+    json result = {"tracks", json_tracks};
+    save_file << result;
 }
 
 std::vector<std::shared_ptr<SceneObject>> CoasterTrack::load_from_file() {
@@ -110,7 +123,7 @@ std::vector<std::shared_ptr<SceneObject>> CoasterTrack::load_from_file() {
 
     NFD_Init();
     NFD::UniquePath file_path;
-    constexpr nfdu8filteritem_t filters[1] = {{"Text file", "txt"}};
+    constexpr nfdu8filteritem_t filters[1] = {{"JSON file", "json"}};
     const nfdresult_t result = NFD::OpenDialog(file_path, filters, 1);
     if (result == NFD_CANCEL) {
         NFD_Quit();
@@ -119,32 +132,15 @@ std::vector<std::shared_ptr<SceneObject>> CoasterTrack::load_from_file() {
     if (result != NFD_OKAY) throw std::runtime_error("Error opening file");
     NFD_Quit();
 
-    const auto tracks_to_add = parse_txt_file(file_path.get());
+    const auto tracks_to_add = parse_json(file_path.get());
     return add_tracks(tracks_to_add);
 }
 
-std::vector<CoasterTrack::TrackType> CoasterTrack::parse_txt_file(const std::string& file_path) {
+std::vector<std::string> CoasterTrack::parse_json(const std::string& file_path) {
 
     std::ifstream coaster_file(file_path);
-    std::stringstream buffer;
-    buffer << coaster_file.rdbuf();
-    std::string coaster_string = buffer.str();
-
-    std::vector<TrackType> tracks_to_add;
-
-    std::regex pattern("CoasterTrack::TrackType::(\\w+),");
-    std::smatch matches;
-
-    auto pos = coaster_string.find('\n');
-    while (pos != std::string::npos) {
-        if (std::string cur_track = coaster_string.substr(0, pos); std::regex_search(cur_track, matches, pattern)) {
-            if (auto type = magic_enum::enum_cast<TrackType>(matches[1].str()); type.has_value()) {
-                tracks_to_add.push_back(type.value());
-            }
-        }
-        coaster_string.erase(0, pos + 1);
-        pos = coaster_string.find('\n');
-    }
+    auto json = json::parse(coaster_file);
+    auto tracks_to_add = json["tracks"];
 
     return tracks_to_add;
 }

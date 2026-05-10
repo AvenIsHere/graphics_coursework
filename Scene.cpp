@@ -69,7 +69,7 @@ void Scene::remove_coaster(const std::shared_ptr<CoasterTrack> &coaster) {
     }
 }
 
-void Scene::add_track_to_coaster(const std::shared_ptr<CoasterTrack> &coaster, CoasterTrack::TrackType type) {
+void Scene::add_track_to_coaster(const std::shared_ptr<CoasterTrack> &coaster, const std::string &type) {
     if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
         add_object(coaster->add_track(type));
     }
