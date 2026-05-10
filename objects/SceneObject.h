@@ -12,7 +12,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "../Shader.h"
-#include "../Scene.h"
+#include "../Light.h"
 
 class SceneObject {
 public:
@@ -26,7 +26,7 @@ public:
     // Destructor
     virtual ~SceneObject() = default;
 
-    virtual void draw(const glm::mat4 & view, const glm::mat4 & projection, Scene::Light light_data) const = 0;
+    virtual void draw(const glm::mat4 & view, const glm::mat4 & projection, Light light_data) const = 0;
     void move(glm::vec3 direction);
     void rotate(float angle, glm::vec3 axis);
 
@@ -34,7 +34,7 @@ public:
 
     [[nodiscard]] bool colliding(glm::vec3 start_point, glm::vec3 end_point) const;
 
-    void handle_lighting(const glm::mat4 & view, Scene::Light light) const;
+    void handle_lighting(const glm::mat4 & view, Light light) const;
     void handle_material() const;
     void handle_location(const glm::mat4 & view, const glm::mat4 & projection) const;
     [[nodiscard]] glm::mat4 handle_rotation(glm::mat4 model_view_matrix) const;

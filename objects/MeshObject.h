@@ -18,7 +18,7 @@ public:
         const std::string& material_name);
     ~MeshObject() override;
 
-    void draw(const glm::mat4 & view, const glm::mat4 & projection, Scene::Light light_data) const override;
+    void draw(const glm::mat4 & view, const glm::mat4 & projection, Light light_data) const override;
 
 protected:
     GLuint m_vaoID = 0;

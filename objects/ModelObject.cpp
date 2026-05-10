@@ -34,7 +34,7 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
 
     this->material = get_material(material_name);
 
-    this->aabb_dimensions = get_aabb_dimensions();
+    this->aabb_dimensions = ModelObject::get_aabb_dimensions();
 }
 
 ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position, const glm::vec3 dimensions) :
@@ -53,7 +53,7 @@ glm::vec3 ModelObject::get_aabb_dimensions() {
     return return_scale;
 }
 
-void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, Scene::Light light_data) const {
+void ModelObject::draw(const glm::mat4 &view, const glm::mat4 &projection, Light light_data) const {
     glUseProgram(shader->handle());
     glUniform1i(glGetUniformLocation(shader->handle(), "useTexture"), true);
 

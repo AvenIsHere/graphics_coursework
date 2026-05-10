@@ -5,6 +5,7 @@
 #ifndef GRAPHICS_COURSEWORK_MODELOBJECT_H
 #define GRAPHICS_COURSEWORK_MODELOBJECT_H
 
+#include <map>
 #include <memory>
 
 #include "SceneObject.h"
@@ -30,7 +31,7 @@ public:
     explicit ModelObject(const std::string &model_path, const std::string &shader_name, glm::vec3 position, glm::vec3 scale, const std::string& material_name);
     explicit ModelObject(const std::string& model_name, glm::vec3 position, glm::vec3 dimensions);
 
-    void draw(const glm::mat4 & view, const glm::mat4 & projection, Scene::Light light_data) const override;
+    void draw(const glm::mat4 & view, const glm::mat4 & projection, Light light_data) const override;
 
     glm::vec3 get_aabb_dimensions() override;
 

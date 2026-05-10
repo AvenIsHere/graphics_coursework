@@ -9,7 +9,7 @@
 #include <nlohmann/json.hpp>
 
 #include "CoasterTrack.h"
-#include "SceneData.h"
+#include "Light.h"
 using json = nlohmann::json;
 
 #include "objects/SceneObject.h"
@@ -29,13 +29,6 @@ public:
     enum Axis {
         X,
         Y,
-    };
-
-    struct Light {
-        glm::vec4 pos;
-        std::array<float, 4> ambient;
-        std::array<float, 4> diffuse;
-        std::array<float, 4> specular;
     };
 
     Scene(int screen_width, int screen_height, const json& given_json_data);

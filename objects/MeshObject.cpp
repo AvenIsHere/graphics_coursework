@@ -50,7 +50,7 @@ void MeshObject::init_buffers(const std::vector<float> &vertices, const std::vec
     glBindVertexArray(0);
 }
 
-void MeshObject::draw(const glm::mat4 & view, const glm::mat4 & projection, const Scene::Light light_data) const {
+void MeshObject::draw(const glm::mat4 & view, const glm::mat4 & projection, const Light light_data) const {
     glUseProgram(shader->handle());
     glBindVertexArray(m_vaoID);
     glUniform1i(glGetUniformLocation(shader->handle(), "useTexture"), false);

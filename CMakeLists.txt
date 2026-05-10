@@ -56,6 +56,7 @@ add_executable(graphics_coursework main.cpp
         objects/ModelObject.cpp
         CoasterTrack.cpp
         CoasterTrack.h
+        Light.h
 )
 
 target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES} freeimage magic_enum::magic_enum nfd)
