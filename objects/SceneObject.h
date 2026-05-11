@@ -23,6 +23,8 @@ public:
         float material_shininess;
     };
 
+    explicit SceneObject(std::string given_name);
+
     // Destructor
     virtual ~SceneObject() = default;
 
@@ -32,7 +34,7 @@ public:
 
     virtual glm::vec3 get_aabb_dimensions() = 0;
 
-    [[nodiscard]] bool colliding(glm::vec3 start_point, glm::vec3 end_point) const;
+    [[nodiscard]] virtual bool colliding(glm::vec3 start_point, glm::vec3 end_point) const;
 
     void handle_lighting(const glm::mat4 & view, Light light) const;
     void handle_material() const;
@@ -49,6 +51,7 @@ public:
 
     std::shared_ptr<Shader> shader;
     std::shared_ptr<MaterialData> material;
+    std::string name;
     glm::mat4 model_matrix;
     glm::vec3 rotation{};
 protected:

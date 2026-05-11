@@ -1,7 +1,8 @@
 # OpenGL Rollercoaster Simulation
 
 > [!IMPORTANT]
-> This program was entirely developed on and compiled for Fedora, a Linux distribution.
-> The executable will not run on Windows, and compilation for Windows will likely fail without making changes to the code.
+> This program was entirely developed on and compiled for Fedora, a Linux distribution, on x86 64-bit hardware.
+> The executable will not run on Windows or non x86 64-bit hardware, and compilation for Windows will likely fail without making changes to the code.
 
-Rollercoaster assets were made by Cihan (@ccanturker) on [sketchfab.com](https://sketchfab.com) - [link](https://https://sketchfab.com/3d-models/roller-coaster-pack-88e455e875354b2ea1780174dddba2f2)
+"Roller Coaster pack" (https://skfb.ly/pxtYr) by Cihan is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+"Pine tree" (https://skfb.ly/6VKKJ) by Andriy Shekh is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

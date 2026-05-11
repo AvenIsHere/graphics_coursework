@@ -1,0 +1,6 @@
+{
+  "name": "pine_tree",
+  "model_path": "models/trees/pine_tree/pine_tree.obj",
+  "shader_name": "model",
+  "material_name": "model"
+}

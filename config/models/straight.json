@@ -1,6 +1,6 @@
 {
   "name": "straight",
-  "model_path": "rollercoaster_models/tracks/straight.obj",
+  "model_path": "models/rollercoaster_models/tracks/straight.obj",
   "shader_name": "model",
   "material_name": "model"
 }

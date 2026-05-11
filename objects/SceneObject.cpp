@@ -6,6 +6,7 @@
 
 #include <array>
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <glm/ext/matrix_transform.hpp>
 
@@ -13,6 +14,10 @@
 
 std::unordered_map<std::string, std::shared_ptr<Shader>> SceneObject::shaders;
 std::unordered_map<std::string, std::shared_ptr<SceneObject::MaterialData>> SceneObject::materials;
+
+SceneObject::SceneObject(std::string given_name) {
+    name = std::move(given_name);
+}
 
 void SceneObject::add_shader(const std::string& name, const std::string &vert_path, const std::string &frag_path) {
     auto shader = std::make_shared<Shader>();

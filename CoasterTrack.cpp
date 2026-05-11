@@ -19,20 +19,27 @@ using json = nlohmann::json;
 
 std::unordered_map<std::string, CoasterTrack::TrackData> CoasterTrack::tracks;
 
-CoasterTrack::CoasterTrack(const std::vector<std::string> &given_track, const glm::vec3 displacement) {
+CoasterTrack::CoasterTrack(const std::vector<std::string> &given_track, const glm::vec3 displacement, const std::string& cart_model) {
     position = displacement;
+    cart = std::make_shared<Cart>(displacement, cart_model, "cart");
+    model_objects.push_back(cart);
     add_tracks(given_track);
 }
 
-CoasterTrack::CoasterTrack(const std::string &json_path, glm::vec3 displacement) {
+CoasterTrack::CoasterTrack(const std::string &json_path, glm::vec3 displacement, const std::string& cart_model) {
     position = displacement;
+    cart = std::make_shared<Cart>(displacement, cart_model, "cart");
+    model_objects.push_back(cart);
     add_tracks(parse_json(json_path));
+
 }
 
-CoasterTrack::CoasterTrack(const glm::vec3 displacement) {
+CoasterTrack::CoasterTrack(const glm::vec3 displacement, std::string cart_model) {
     track = {};
     initial_start_point = std::nullopt;
     position = displacement;
+    cart = std::make_shared<Cart>(displacement, cart_model, "cart");
+    model_objects.push_back(cart);
 }
 
 void CoasterTrack::new_track(std::pair<std::string, TrackData> given_track) {
@@ -50,7 +57,7 @@ std::shared_ptr<SceneObject> CoasterTrack::add_track(std::string given_track) {
     const auto& data = tracks.at(given_track);
     const glm::vec3 obj_origin = position - rotation_vec(data.start_point);
 
-    const auto object = model_objects.emplace_back(std::make_shared<ModelObject>(data.piece_model, obj_origin, glm::vec3(1,1,1)));
+    const auto object = model_objects.emplace_back(std::make_shared<ModelObject>(data.piece_model, obj_origin, glm::vec3(1,1,1), "cart"));
 
     object->rotate(rotation.x, {1,0,0});
     object->rotate(rotation.y, {0,1,0});
@@ -114,7 +121,9 @@ void CoasterTrack::save_to_file() const {
         json_tracks.push_back(given_track);
     }
 
-    json result = {"tracks", json_tracks};
+    json result = json::object({
+        {"tracks", json_tracks}
+    });
     save_file << result;
 }
 
@@ -154,6 +163,10 @@ std::vector<std::shared_ptr<SceneObject> > CoasterTrack::clear_tracks() {
     }
     initial_start_point = std::nullopt;
     return return_tracks;
+}
+
+void CoasterTrack::start_cart(float speed) {
+
 }
 
 std::vector<std::shared_ptr<SceneObject> > CoasterTrack::get_model_objs() {

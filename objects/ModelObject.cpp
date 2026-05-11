@@ -4,14 +4,15 @@
 
 #include "ModelObject.h"
 
+#include <utility>
+
 #include "Cuboid.h"
 
 #include "../GlmMaths.h"
 
 std::map<std::string, ModelObject::Model> ModelObject::models;
 
-ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const glm::vec3 scale, const std::string& material_name) {
-
+ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const glm::vec3 scale, const std::string& material_name, std::string name) : SceneObject(std::move(name)) {
     this->shader = get_shader(shader_name);
     this->three_d_model_ = std::make_unique<CThreeDModel>();
 
@@ -37,12 +38,13 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->aabb_dimensions = ModelObject::get_aabb_dimensions();
 }
 
-ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position, const glm::vec3 dimensions) :
+ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position, const glm::vec3 dimensions, std::string name) :
     ModelObject(models.at(model_name).model_path,
         models.at(model_name).shader_name,
         position,
         dimensions,
-        models.at(model_name).material_name){
+        models.at(model_name).material_name,
+        std::move(name)){
 }
 
 glm::vec3 ModelObject::get_aabb_dimensions() {
@@ -72,4 +74,32 @@ void ModelObject::add_models(const std::vector<std::tuple<std::string,Model>> &g
     for (const auto& [mod_name, mod] : given_models) {
         models[mod_name] = mod;
     }
+}
+
+bool ModelObject::colliding(glm::vec3 start_point, glm::vec3 end_point) const {
+    glm::mat4 full_model_mat = handle_rotation(model_matrix);
+
+    glm::mat4 inverse_model_mat = glm::inverse(full_model_mat);
+
+    glm::vec4 local_start = inverse_model_mat * glm::vec4(start_point, 1.0f);
+    glm::vec4 local_end = inverse_model_mat * glm::vec4(end_point, 1.0f);
+
+    double start_double[] = {
+        std::min(local_start.x, local_end.x),
+        std::min(local_start.y, local_end.y),
+        std::min(local_start.z, local_end.z)
+    };
+    double end_double[] = {
+        std::max(local_start.x, local_end.x),
+        std::max(local_start.y, local_end.y),
+        std::max(local_start.z, local_end.z)
+    };
+
+
+    for (int i = 0; i < three_d_model_->GetOctreeVertexListSize(); i++) {
+        if (three_d_model_->IsVertexIntersectingAABB(start_double, end_double, i)) {
+            return true;
+        }
+    }
+    return false;
 }

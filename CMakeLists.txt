@@ -57,6 +57,8 @@ add_executable(graphics_coursework main.cpp
         CoasterTrack.cpp
         CoasterTrack.h
         Light.h
+        objects/Cart.cpp
+        objects/Cart.h
 )
 
 target_link_libraries(graphics_coursework ${OPENGL_LIBRARIES} GLUT::GLUT glm::glm ${GLEW_LIBRARIES} freeimage magic_enum::magic_enum nfd)
@@ -67,10 +69,10 @@ add_custom_target(copy-files
         "${CMAKE_CURRENT_BINARY_DIR}/glsl_files"
 )
 
-add_custom_target(rollercoaster-models
+add_custom_target(models
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_SOURCE_DIR}/rollercoaster_models"
-        "${CMAKE_CURRENT_BINARY_DIR}/rollercoaster_models"
+        "${CMAKE_CURRENT_SOURCE_DIR}/models"
+        "${CMAKE_CURRENT_BINARY_DIR}/models"
 )
 
 add_custom_target(copy-config
@@ -79,4 +81,4 @@ add_custom_target(copy-config
         "${CMAKE_CURRENT_BINARY_DIR}/config"
 )
 
-add_dependencies(graphics_coursework copy-files rollercoaster-models copy-config)
+add_dependencies(graphics_coursework copy-files models copy-config)

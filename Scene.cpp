@@ -96,6 +96,8 @@ void Scene::move(const Direction direction, const float amount) {
     const float x_dir = std::sin(rotation.x);
     const float z_dir = -std::cos(rotation.x);
 
+    glm::vec3 pos_prev = camera_pos;
+
     switch (direction) {
         case FORWARDS:
             camera_pos.x += x_dir * amount;
@@ -118,6 +120,16 @@ void Scene::move(const Direction direction, const float amount) {
             break;
         case DOWN:
             camera_pos.y -= amount;
+    }
+
+    glm::vec3 camera_box_start = {camera_pos.x - 2, camera_pos.y - 2, camera_pos.z - 2};
+    glm::vec3 camera_box_end = {camera_pos.x + 2, camera_pos.y - 2, camera_pos.z - 2};
+
+    for (const auto& obj : objects) {
+        if (obj->name == "sky") continue;
+        if (obj->colliding(camera_box_start, camera_box_end)) {
+            camera_pos = pos_prev;
+        }
     }
 }
 

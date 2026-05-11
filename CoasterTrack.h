@@ -8,6 +8,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+#include "objects/Cart.h"
 #include "objects/ModelObject.h"
 
 
@@ -21,9 +22,9 @@ public:
         glm::vec3 end_point;
     };
 
-    explicit CoasterTrack(const std::vector<std::string> &given_track, glm::vec3 displacement);
-    explicit CoasterTrack(const std::string &json_path, glm::vec3 displacement);
-    explicit CoasterTrack(glm::vec3 displacement);
+    explicit CoasterTrack(const std::vector<std::string> &given_track, glm::vec3 displacement, const std::string& cart_model);
+    explicit CoasterTrack(const std::string &json_path, glm::vec3 displacement, const std::string& cart_model);
+    explicit CoasterTrack(glm::vec3 displacement, std::string cart_model);
 
     static void new_track(std::pair<std::string, TrackData> given_track);
     static void new_tracks(const std::unordered_map<std::string, TrackData>& given_tracks);
@@ -39,6 +40,10 @@ public:
     std::shared_ptr<SceneObject> pop_track();
     std::vector<std::shared_ptr<SceneObject>> clear_tracks();
 
+    void start_cart(float speed);
+    void stop_cart(float stopping_time);
+    void change_cart_speed(float speed);
+
     [[nodiscard]] std::vector<std::shared_ptr<SceneObject>> get_model_objs();
 
 private:
@@ -51,6 +56,8 @@ private:
 
     std::vector<std::string> track;
     std::vector<std::shared_ptr<SceneObject>> model_objects;
+
+    std::shared_ptr<Cart> cart;
 
     [[nodiscard]] glm::vec3 rotation_vec(glm::vec3 direction) const;
     void handle_movement(std::string type, bool undo);

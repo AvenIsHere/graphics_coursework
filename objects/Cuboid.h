@@ -11,9 +11,11 @@
 
 class Cuboid : public MeshObject {
 public:
-    explicit Cuboid(glm::vec3 position, glm::vec3 dimensions, const std::string& shader_name, const std::string& material_name);
+    explicit Cuboid(glm::vec3 position, glm::vec3 dimensions, const std::string& shader_name, const std::string& material_name, const std::string& name);
 
     glm::vec3 get_aabb_dimensions() override;
+
+    [[nodiscard]] bool colliding(glm::vec3 start_point, glm::vec3 end_point) const override;
 private:
 
     //CONSTS

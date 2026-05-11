@@ -15,7 +15,8 @@ public:
         const std::vector<float>& normals,
         const std::vector<unsigned int>& indices,
         const std::string& shader_name,
-        const std::string& material_name);
+        const std::string& material_name,
+        const std::string &name);
     ~MeshObject() override;
 
     void draw(const glm::mat4 & view, const glm::mat4 & projection, Light light_data) const override;

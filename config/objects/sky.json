@@ -1,8 +1,0 @@
-{
-  "name": "sky",
-  "obj_type": "Cuboid",
-  "position": [0.0, 0.0, 0.0],
-  "dimensions": [500, 500, 500],
-  "shader_name": "model",
-  "material_name": "sky"
-}

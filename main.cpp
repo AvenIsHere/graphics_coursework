@@ -30,11 +30,13 @@ namespace Application {
         glutMainLoop();
     }
 
-    void update() {
+    void update(int value) {
         time_elapsed = glutGet(GLUT_ELAPSED_TIME);
         scene->update(time_elapsed);
         InputManager::update(time_elapsed);
         prev_time_elapsed = time_elapsed;
+
+        glutTimerFunc(16, update, 0);
     }
 
     void render() {
@@ -66,32 +68,36 @@ namespace Application {
         }
     }
 
-    void load_tracks_json(const std::string &tracks_folder) {
-        for (const auto& file : std::filesystem::directory_iterator(tracks_folder)) {
-            json track = get_json(file.path());
+    void load_tracks_json(const std::string &tracks_file) {
+        json tracks_json = get_json(tracks_file);
+        for (const auto& track : tracks_json["tracks"]) {
             CoasterTrack::new_track({track["name"], CoasterTrack::TrackData{track["piece_model"], glm::radians(static_cast<float>(track["rotation"])), {track["start_point"][0], track["start_point"][1], track["start_point"][2]}, {track["end_point"][0], track["end_point"][1], track["end_point"][2]}}});
         }
     }
 
-    void load_objects_json(const std::string &objects_folder) {
-        for (const auto& file : std::filesystem::directory_iterator(objects_folder)) {
-            json object = get_json(file.path());
+    void load_objects_json(const std::string &objects_file) {
+        json objects_json = get_json(objects_file);
+        for (const auto& object : objects_json["objects"]) {
             if (object["obj_type"] == "Cuboid") {
-                scene->add_object(std::make_shared<Cuboid>(glm::vec3{object["position"][0], object["position"][1], object["position"][2]}, glm::vec3{object["dimensions"][0], object["dimensions"][1], object["dimensions"][2]}, object["shader_name"], object["material_name"]));
+                scene->add_object(std::make_shared<Cuboid>(glm::vec3{object["position"][0], object["position"][1], object["position"][2]}, glm::vec3{object["dimensions"][0], object["dimensions"][1], object["dimensions"][2]}, object["shader_name"], object["material_name"], object["name"]));
+                continue;
+            }
+            if (object["obj_type"] == "Model") {
+                scene-> add_object(std::make_shared<ModelObject>(object["model_name"], glm::vec3{object["position"][0], object["position"][1], object["position"][2]}, glm::vec3{object["dimensions"][0], object["dimensions"][1], object["dimensions"][2]}, object["name"]));
             }
         }
     }
 
-    void load_from_json(const std::string& shaders_folder, const std::string& materials_folder, const std::string& models_folder, const std::string &tracks_folder, const std::string &objects_folder) {
+    void load_from_json(const std::string& shaders_folder, const std::string& materials_folder, const std::string& models_folder, const std::string &tracks_folder, const std::string &objects_json) {
         load_shaders_json(shaders_folder);
         load_materials_json(materials_folder);
         load_models_json(models_folder);
         load_tracks_json(tracks_folder);
-        load_objects_json(objects_folder);
+        load_objects_json(objects_json);
     }
 
     std::shared_ptr<CoasterTrack> load_default_coaster() {
-        return std::make_shared<CoasterTrack>("config/default_coaster.json", glm::vec3{-20, 1, -60});
+        return std::make_shared<CoasterTrack>("config/default_coaster.json", glm::vec3{-20, 1, -60}, get_json("config/default_coaster.json")["cart_model"]);
     }
 
     void init(int argc, char** argv, int screen_width, int screen_height, const std::string& scene_config) {
@@ -114,7 +120,7 @@ namespace Application {
 
         glutReshapeFunc(screen_resize);
 
-        glutIdleFunc(update);
+        glutTimerFunc(0, update, 0);
 
         scene = std::make_unique<Scene>(screen_width, screen_height, get_json(scene_config));
     }
@@ -122,20 +128,10 @@ namespace Application {
 
 int main(const int argc, char** argv) {
     Application::init(argc, argv, Application::SCREEN_WIDTH, Application::SCREEN_HEIGHT, "config/scene_config.json");
-    Application::load_from_json("config/shaders", "config/materials", "config/models", "config/tracks", "config/objects");
+    Application::load_from_json("config/shaders", "config/materials", "config/models", "config/tracks.json", "config/objects.json");
 
     auto coaster = Application::load_default_coaster();
     Application::scene->add_coaster(coaster);
-
-    auto cart = std::make_shared<ModelObject>("cart", glm::vec3(0, 12, 20), glm::vec3(1,1,1));
-    Application::scene->add_objects({
-        cart
-    });
-
-    Application::scene->set_on_update([&](int time_elapsed) {
-        cart->move(glm::vec3(0.05f, 0, 0));
-        cart->rotate(0.02, glm::vec3(0, 1, 0));
-    });
 
     InputManager::add_hold_mappings({
         // movement

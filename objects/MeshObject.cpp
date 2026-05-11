@@ -6,9 +6,9 @@
 
 #include <memory>
 
-MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<float>& normals, const std::vector<unsigned> &indices, const std::string &shader_name, const std::string& material_name) {
+MeshObject::MeshObject(const std::vector<float> &vertices, const std::vector<float>& normals, const std::vector<unsigned> &indices, const std::string &shader_name, const std::string& material_name, const std::string &name) : SceneObject(name) {
     this->shader = get_shader(shader_name);
-    this-> material = get_material(material_name);
+    this->material = get_material(material_name);
     indices_size = indices.size();
     init_buffers(vertices, normals, indices);
 }
