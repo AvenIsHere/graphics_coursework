@@ -95,11 +95,18 @@ bool ModelObject::colliding(glm::vec3 start_point, glm::vec3 end_point) const {
         std::max(local_start.z, local_end.z)
     };
 
+    double center[] = {
+        (start_double[0] + end_double[0]) / 2.0,
+        (start_double[1] + end_double[1]) / 2.0,
+        (start_double[2] + end_double[2]) / 2.0
+    };
 
-    for (int i = 0; i < three_d_model_->GetOctreeVertexListSize(); i++) {
-        if (three_d_model_->IsVertexIntersectingAABB(start_double, end_double, i)) {
-            return true;
-        }
-    }
-    return false;
+    double half_size[] = {
+        (end_double[0] - start_double[0]) / 2.0,
+        (end_double[1] - start_double[1]) / 2.0,
+        (end_double[2] - start_double[2]) / 2.0
+    };
+
+
+    return three_d_model_->IsIntersecting(center, half_size);
 }

@@ -643,3 +643,30 @@ void COctree::CalcVertexNormals(CThreeDModel* model)
 		}
 	}
 }
+
+bool COctree::IsIntersecting(double box_center[3], double box_half_size[3], CThreeDModel *model) {
+	double node_center[] = {(m_dMinX + m_dMaxX) / 2.0, (m_dMinY + m_dMaxY) / 2.0, (m_dMinZ + m_dMaxZ) / 2.0};
+	double node_half_size[] = {(m_dMaxX - m_dMinX) / 2.0, (m_dMaxY - m_dMinY) / 2.0, (m_dMaxZ - m_dMinZ) / 2.0};
+
+	if (abs(box_center[0] - node_center[0] > box_half_size[0] + node_half_size[0]) ||
+		abs(box_center[1] - node_center[1] > box_half_size[1] + node_half_size[1]) ||
+		abs(box_center[2] - node_center[2] > box_half_size[2] + node_half_size[2])) {
+		return false;
+	}
+
+	if (m_iLevel >= MAX_DEPTH || m_pobChildren[0] == nullptr) {
+		for (int i = 0; i < m_iPrimitiveListSize; i++) {
+			if (model->IsTriangleIntersectingAABB(box_center, box_half_size, m_piPrimitiveList[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	for (auto & i : m_pobChildren) {
+		if (i && i->IsIntersecting(box_center, box_half_size, model)) {
+			return true;
+		}
+	}
+	return false;
+}

@@ -887,3 +887,10 @@ void CThreeDModel::DeleteVertexFaceData()
 	m_pobTriangles = nullptr;
 	m_pvVertNormals = nullptr;
 }
+
+bool CThreeDModel::IsIntersecting(double box_center[3], double box_half_size[3]) {
+	if (m_pobOctree == nullptr) {
+		ConstructOctree();
+	}
+	return m_pobOctree->IsIntersecting(box_center, box_half_size, this);
+}

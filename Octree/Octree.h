@@ -44,4 +44,6 @@ public:
 	void			DrawBoundingBox(Shader* myShader);
 	void			DrawAllBoxes(Shader* myShader);
 	void			DrawOctreeLeaves(Shader* myShader);
+
+	bool            IsIntersecting(double box_center[3], double box_half_size[3], CThreeDModel* model);
 };

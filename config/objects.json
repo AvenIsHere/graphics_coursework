@@ -27,27 +27,27 @@
       "name": "pine_tree_2",
       "obj_type": "Model",
       "model_name": "pine_tree",
-      "position": [-20, -5, -15],
+      "position": [-45, -5, -67],
       "dimensions": [5, 5, 5]
     },
     {
       "name": "pine_tree_3",
       "obj_type": "Model",
       "model_name": "pine_tree",
-      "position": [-45, -5, -67],
+      "position": [-55, -5, -62],
+      "dimensions": [5, 5, 5]
+    },
+    {
+      "name": "pine_tree_4",
+      "obj_type": "Model",
+      "model_name": "pine_tree",
+      "position": [-73, -5, -4],
       "dimensions": [5, 5, 5]
     },
     {
       "name": "pine_tree_5",
       "obj_type": "Model",
       "model_name": "pine_tree",
-      "position": [-55, -5, -62],
-      "dimensions": [5, 5, 5]
-    },
-    {
-      "name": "pine_tree_6",
-      "obj_type": "Model",
-      "model_name": "pine_tree",
       "position": [-73, -5, -4],
       "dimensions": [5, 5, 5]
     },
@@ -55,7 +55,7 @@
       "name": "pine_tree_6",
       "obj_type": "Model",
       "model_name": "pine_tree",
-      "position": [-73, -5, -4],
+      "position": [-20, -6, 42],
       "dimensions": [5, 5, 5]
     }
   ]

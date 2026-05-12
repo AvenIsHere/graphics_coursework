@@ -31,9 +31,14 @@ public:
         Y,
     };
 
+    enum View {
+        FREEROAM,
+        COASTER,
+    };
+
     Scene(int screen_width, int screen_height, const json& given_json_data);
 
-    void update(int time_elapsed);
+    void update(int time_elapsed, int prev_time_elapsed);
     void update_view(int time_elapsed);
     void render() const;
 
@@ -54,6 +59,8 @@ public:
 
     void move(Direction direction, float amount);
     void rotate(Axis axis, float given_rotation);
+    void set_view(View view);
+    View get_view() const;
 
     void screen_resize(int width, int height);
 
@@ -68,6 +75,7 @@ private:
     json json_data;
     void load_config(const json& given_json_data);
 
+    View view_type;
     glm::vec3 camera_pos{};
     glm::vec3 rotation{};
     float speed{};

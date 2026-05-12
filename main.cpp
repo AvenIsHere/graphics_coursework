@@ -32,7 +32,7 @@ namespace Application {
 
     void update(int value) {
         time_elapsed = glutGet(GLUT_ELAPSED_TIME);
-        scene->update(time_elapsed);
+        scene->update(time_elapsed, prev_time_elapsed);
         InputManager::update(time_elapsed);
         prev_time_elapsed = time_elapsed;
 
@@ -71,7 +71,11 @@ namespace Application {
     void load_tracks_json(const std::string &tracks_file) {
         json tracks_json = get_json(tracks_file);
         for (const auto& track : tracks_json["tracks"]) {
-            CoasterTrack::new_track({track["name"], CoasterTrack::TrackData{track["piece_model"], glm::radians(static_cast<float>(track["rotation"])), {track["start_point"][0], track["start_point"][1], track["start_point"][2]}, {track["end_point"][0], track["end_point"][1], track["end_point"][2]}}});
+            std::vector<glm::vec3> points;
+            for (const auto& point : track["points"]) {
+                points.emplace_back(point[0], point[1], point[2]);
+            }
+            CoasterTrack::new_track({track["name"], CoasterTrack::TrackData{track["piece_model"], glm::radians(static_cast<float>(track["rotation"])), {track["start_point"][0], track["start_point"][1], track["start_point"][2]}, {track["end_point"][0], track["end_point"][1], track["end_point"][2]}, points}});
         }
     }
 
@@ -162,8 +166,19 @@ int main(const int argc, char** argv) {
         {'6', [coaster]{Application::scene->add_track_to_coaster(coaster, "step_down");}},
         {8, [coaster]{Application::scene->pop_track_from_coaster(coaster);}},
 
+        // save or load track
         {'p', [coaster]{coaster->save_to_file();}},
-        {'l', [coaster]{Application::scene->load_coaster_from_file(coaster);}}
+        {'l', [coaster]{Application::scene->load_coaster_from_file(coaster);}},
+
+        // toggle view
+        {'v', [] {
+                if (Application::scene->get_view() == Scene::COASTER) Application::scene->set_view(Scene::FREEROAM);
+                else Application::scene ->set_view(Scene::COASTER);
+        }},
+        {'g', [coaster]{ coaster->start_cart(0.001f);}},
+        {'=', [coaster]{coaster->change_cart_speed(0.0003);}},
+        {'-', [coaster]{coaster->change_cart_speed(-0.0003);}},
+        {'h', [coaster]{ coaster->stop_cart();}},
     });
 
     Application::run();

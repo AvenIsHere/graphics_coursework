@@ -19,6 +19,7 @@
 Scene::Scene(const int screen_width, const int screen_height, const json& given_json_data) {
     this->screen_width = screen_width;
     this->screen_height = screen_height;
+    this->view_type = FREEROAM;
 
     load_config(given_json_data);
 
@@ -71,13 +72,13 @@ void Scene::remove_coaster(const std::shared_ptr<CoasterTrack> &coaster) {
 
 void Scene::add_track_to_coaster(const std::shared_ptr<CoasterTrack> &coaster, const std::string &type) {
     if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
-        add_object(coaster->add_track(type));
+        add_objects(coaster->add_track(type));
     }
 }
 
 void Scene::pop_track_from_coaster(const std::shared_ptr<CoasterTrack> &coaster) {
     if (const auto& item = std::ranges::find(coasters, coaster); item != coasters.end()) {
-        remove_object(coaster->pop_track());
+        remove_objects(coaster->pop_track());
     }
 }
 
@@ -122,8 +123,8 @@ void Scene::move(const Direction direction, const float amount) {
             camera_pos.y -= amount;
     }
 
-    glm::vec3 camera_box_start = {camera_pos.x - 2, camera_pos.y - 2, camera_pos.z - 2};
-    glm::vec3 camera_box_end = {camera_pos.x + 2, camera_pos.y - 2, camera_pos.z - 2};
+    glm::vec3 camera_box_start = {camera_pos.x - 0.2, camera_pos.y - 0.2, camera_pos.z - 0.2};
+    glm::vec3 camera_box_end = {camera_pos.x + 0.2, camera_pos.y + 0.2, camera_pos.z + 0.2};
 
     for (const auto& obj : objects) {
         if (obj->name == "sky") continue;
@@ -145,14 +146,25 @@ void Scene::rotate(const Axis axis, const float given_rotation) {
 }
 
 void Scene::update_view(int time_elapsed) {
+
+    if (view_type == COASTER) {
+        const auto pos = coasters[0]->get_cart_location();
+        const auto half_coaster_size = coasters[0]->get_cart_size() / 2.0f;
+        camera_pos = pos + half_coaster_size + glm::vec3{0.0f, half_coaster_size.y + 2, 0.0f};
+    }
     auto view = glm::mat4(1.0f);
     view = glm::rotate(view, rotation.y, glm::vec3(1.0f, 0.0f, 0.0f));
     view = glm::rotate(view, rotation.x, glm::vec3(0.0f, 1.0f, 0.0f));
     view_matrix = glm::translate(view, -camera_pos);
 }
 
-void Scene::update(const int time_elapsed) {
+void Scene::update(const int time_elapsed, const int prev_time_elapsed) {
     glutPostRedisplay();
+
+    for (const auto& coaster : coasters) {
+        coaster->update(time_elapsed, prev_time_elapsed);
+    }
+
     update_view(time_elapsed);
     if (on_update) on_update(time_elapsed);
 }
@@ -197,4 +209,12 @@ void Scene::load_config(const json& given_json_data) {
         light.diffuse[i] = json_data["light-diffuse"][i];
         light.specular[i] = json_data["light-specular"][i];
     }
+}
+
+void Scene::set_view(const View view) {
+    view_type = view;
+}
+
+Scene::View Scene::get_view() const {
+    return view_type;
 }

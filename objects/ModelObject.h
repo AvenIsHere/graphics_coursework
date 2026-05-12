@@ -19,7 +19,7 @@ public:
         std::string shader_name;
         std::string material_name;
     };
-private:
+protected:
 
     std::unique_ptr<CThreeDModel> three_d_model_;
 
