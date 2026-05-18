@@ -1,6 +1,18 @@
+// OpenGL Rollercoaster Simulation
+// Copyright (C) 2026 Aven Furness
 //
-// Created by aven on 08/04/2026.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #ifndef GRAPHICS_COURSEWORK_MODELOBJECT_H
 #define GRAPHICS_COURSEWORK_MODELOBJECT_H
@@ -28,8 +40,8 @@ protected:
     glm::vec3 scale{};
 
 public:
-    explicit ModelObject(const std::string &model_path, const std::string &shader_name, glm::vec3 position, glm::vec3 scale, const std::string& material_name, std::string name);
-    explicit ModelObject(const std::string& model_name, glm::vec3 position, glm::vec3 dimensions, std::string name);
+    explicit ModelObject(const std::string &model_path, const std::string &shader_name, glm::vec3 position, glm::vec3 scale, const std::string& material_name, std::string name, bool centre_xz = false);
+    explicit ModelObject(const std::string& model_name, glm::vec3 position, glm::vec3 dimensions, std::string name, bool centre_xz = false);
 
     void draw(const glm::mat4 & view, const glm::mat4 & projection, Light light_data) const override;
 

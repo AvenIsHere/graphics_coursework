@@ -53,7 +53,6 @@ add_executable(graphics_coursework main.cpp
         Images/ImageLoading.cpp
         objects/ModelObject.cpp
         objects/ModelObject.h
-        objects/ModelObject.cpp
         CoasterTrack.cpp
         CoasterTrack.h
         Light.h

@@ -1,6 +1,18 @@
+// OpenGL Rollercoaster Simulation
+// Copyright (C) 2026 Aven Furness
 //
-// Created by aven on 27/03/2026.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "Scene.h"
 
@@ -147,7 +159,7 @@ void Scene::rotate(const Axis axis, const float given_rotation) {
 
 void Scene::update_view(int time_elapsed) {
 
-    if (view_type == COASTER) {
+    if (view_type == COASTER && !coasters.empty()) {
         const auto pos = coasters[0]->get_cart_location();
         const auto half_coaster_size = coasters[0]->get_cart_size() / 2.0f;
         camera_pos = pos + half_coaster_size + glm::vec3{0.0f, half_coaster_size.y + 2, 0.0f};

@@ -1,8 +1,25 @@
+// OpenGL Rollercoaster Simulation
+// Copyright (C) 2026 Aven Furness
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
 #include <glm/glm.hpp>
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <functional>
@@ -23,7 +40,16 @@ namespace Application {
 
     json get_json(const std::string& path) {
         std::ifstream f(path);
-        return json::parse(f);
+        if (!f.is_open()) {
+            std::cerr << "Could not open file: " << path << std::endl;
+            return json::object();
+        }
+        try {
+            return json::parse(f);
+        } catch (const json::parse_error& e) {
+            std::cerr << "Parse error in " << path << ": " << e.what() << std::endl;
+            return json::object();
+        }
     }
 
     void run() {
@@ -32,8 +58,9 @@ namespace Application {
 
     void update(int value) {
         time_elapsed = glutGet(GLUT_ELAPSED_TIME);
+        const auto delta_time = static_cast<float>(time_elapsed - prev_time_elapsed);
         scene->update(time_elapsed, prev_time_elapsed);
-        InputManager::update(time_elapsed);
+        InputManager::update(time_elapsed, delta_time);
         prev_time_elapsed = time_elapsed;
 
         glutTimerFunc(16, update, 0);
@@ -49,27 +76,31 @@ namespace Application {
 
     void load_shaders_json(const std::string &shaders_folder) {
         for (const auto& file : std::filesystem::directory_iterator(shaders_folder)) {
-            json shader_json = get_json(file.path());
+            if (file.path().extension() != ".json") continue;
+            json shader_json = get_json(file.path().string());
             SceneObject::add_shader(shader_json["name"], shader_json["vert_path"], shader_json["frag_path"]);
         }
     }
 
     void load_materials_json(const std::string &materials_folder) {
         for (const auto& file : std::filesystem::directory_iterator(materials_folder)) {
-            json material_json = get_json(file.path());
+            if (file.path().extension() != ".json") continue;
+            json material_json = get_json(file.path().string());
             SceneObject::add_material(material_json["name"], {material_json["material_ambient"], material_json["material_diffuse"], material_json["material_specular"], material_json["material_shininess"]});
         }
     }
 
     void load_models_json(const std::string &models_folder) {
         for (const auto& file : std::filesystem::directory_iterator(models_folder)) {
-            json model = get_json(file.path());
+            if (file.path().extension() != ".json") continue;
+            json model = get_json(file.path().string());
             ModelObject::add_model(model["name"], {model["model_path"], model["shader_name"], model["material_name"]});
         }
     }
 
     void load_tracks_json(const std::string &tracks_file) {
         json tracks_json = get_json(tracks_file);
+        if (!tracks_json.is_object() || !tracks_json.contains("tracks")) return;
         for (const auto& track : tracks_json["tracks"]) {
             std::vector<glm::vec3> points;
             for (const auto& point : track["points"]) {
@@ -81,6 +112,7 @@ namespace Application {
 
     void load_objects_json(const std::string &objects_file) {
         json objects_json = get_json(objects_file);
+        if (!objects_json.is_object() || !objects_json.contains("objects")) return;
         for (const auto& object : objects_json["objects"]) {
             if (object["obj_type"] == "Cuboid") {
                 scene->add_object(std::make_shared<Cuboid>(glm::vec3{object["position"][0], object["position"][1], object["position"][2]}, glm::vec3{object["dimensions"][0], object["dimensions"][1], object["dimensions"][2]}, object["shader_name"], object["material_name"], object["name"]));
@@ -139,21 +171,21 @@ int main(const int argc, char** argv) {
 
     InputManager::add_hold_mappings({
         // movement
-        {'w', []{Application::scene->move(Scene::FORWARDS, Application::scene->get_speed());}},
-        {'s', []{Application::scene->move(Scene::BACKWARDS, Application::scene->get_speed());}},
-        {'a', []{Application::scene->move(Scene::LEFT, Application::scene->get_speed());}},
-        {'d', []{Application::scene->move(Scene::RIGHT, Application::scene->get_speed());}},
-        {' ', []{Application::scene->move(Scene::UP, Application::scene->get_speed());}},
-        {GLUT_KEY_SHIFT_L, []{Application::scene->move(Scene::DOWN, Application::scene->get_speed());}, true},
+        {'w', [](const float dt){Application::scene->move(Scene::FORWARDS, Application::scene->get_speed() * dt / 16.0f);}},
+        {'s', [](const float dt){Application::scene->move(Scene::BACKWARDS, Application::scene->get_speed() * dt / 16.0f);}},
+        {'a', [](const float dt){Application::scene->move(Scene::LEFT, Application::scene->get_speed() * dt / 16.0f);}},
+        {'d', [](const float dt){Application::scene->move(Scene::RIGHT, Application::scene->get_speed() * dt / 16.0f);}},
+        {' ', [](const float dt){Application::scene->move(Scene::UP, Application::scene->get_speed() * dt / 16.0f);}},
+        {GLUT_KEY_SHIFT_L, [](const float dt){Application::scene->move(Scene::DOWN, Application::scene->get_speed() * dt / 16.0f);}, true},
 
         // rotation
-        {GLUT_KEY_LEFT, []{Application::scene->rotate(Scene::X, -0.02f);}, true},
-        {GLUT_KEY_RIGHT, []{Application::scene->rotate(Scene::X, 0.02f);}, true},
-        {GLUT_KEY_UP, []{Application::scene->rotate(Scene::Y, -0.013f);}, true},
-        {GLUT_KEY_DOWN, []{Application::scene->rotate(Scene::Y, 0.013f);}, true},
+        {GLUT_KEY_LEFT, [](const float dt){Application::scene->rotate(Scene::X, -0.02f * dt / 16.0f);}, true},
+        {GLUT_KEY_RIGHT, [](const float dt){Application::scene->rotate(Scene::X, 0.02f * dt / 16.0f);}, true},
+        {GLUT_KEY_UP, [](const float dt){Application::scene->rotate(Scene::Y, -0.013f * dt / 16.0f);}, true},
+        {GLUT_KEY_DOWN, [](const float dt){Application::scene->rotate(Scene::Y, 0.013f * dt / 16.0f);}, true},
 
         // exit on esc
-        {27, []{glutLeaveMainLoop();}},
+        {27, [](float){glutLeaveMainLoop();}},
     });
 
     InputManager::add_tap_mappings({

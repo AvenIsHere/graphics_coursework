@@ -1,6 +1,18 @@
+// OpenGL Rollercoaster Simulation
+// Copyright (C) 2026 Aven Furness
 //
-// Created by aven on 30/04/2026.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "CoasterTrack.h"
 
@@ -72,13 +84,13 @@ std::vector<std::shared_ptr<SceneObject>> CoasterTrack::add_track(const std::str
     if (!initial_start_point) {
         initial_start_point = position;
         segment_positions.emplace_back(position);
-        segment_y_rotations.emplace_back(0.0f);
+        segment_rotations.emplace_back(0.0f);
 
         cart = std::make_shared<Cart>(position, coaster_model, "cart");
         return_objects.emplace_back(cart);
     } else {
         const auto& prev_data = tracks.at(track[track.size() - 2]);
-        float prev_y_rot = segment_y_rotations.back();
+        float prev_y_rot = segment_rotations.back();
         glm::vec3 prev_pos = segment_positions.back();
 
         glm::mat4 prev_rotation_mat(1.0f);
@@ -88,7 +100,7 @@ std::vector<std::shared_ptr<SceneObject>> CoasterTrack::add_track(const std::str
         float next_y_rot = prev_y_rot + prev_data.rotation;
 
         segment_positions.emplace_back(next_pos);
-        segment_y_rotations.emplace_back(next_y_rot);
+        segment_rotations.emplace_back(next_y_rot);
     }
 
     handle_movement(given_track, false);
@@ -113,7 +125,7 @@ std::vector<std::shared_ptr<SceneObject>> CoasterTrack::pop_track() {
         return_objects.push_back(model_objects.back());
         model_objects.pop_back();
         segment_positions.pop_back();
-        segment_y_rotations.pop_back();
+        segment_rotations.pop_back();
 
         if (track.empty()) {
             if (cart) return_objects.push_back(cart);
@@ -197,7 +209,7 @@ std::vector<std::shared_ptr<SceneObject> > CoasterTrack::clear_tracks() {
     }
     initial_start_point = std::nullopt;
     segment_positions.clear();
-    segment_y_rotations.clear();
+    segment_rotations.clear();
     return return_tracks;
 }
 
@@ -251,7 +263,7 @@ void CoasterTrack::update(int time_elapsed, int prev_time_elapsed) {
     }
 
     glm::vec3 segment_position = segment_positions[current_segment];
-    float segment_y_rotation = segment_y_rotations[current_segment];
+    float segment_rotation = segment_rotations[current_segment];
 
     const auto& data = tracks.at(track[current_segment]);
 
@@ -282,7 +294,7 @@ void CoasterTrack::update(int time_elapsed, int prev_time_elapsed) {
     const glm::vec3 local_tangent = glm::normalize(local_next_position - local_cart_position);
 
     glm::mat4 segment_rotation_matrix(1.0f);
-    segment_rotation_matrix = glm::rotate(segment_rotation_matrix, segment_y_rotation, glm::vec3(0, 1, 0));
+    segment_rotation_matrix = glm::rotate(segment_rotation_matrix, segment_rotation, glm::vec3(0, 1, 0));
 
     const glm::vec3 world_offset = glm::vec3(segment_rotation_matrix * glm::vec4(local_cart_position - data.start_point, 0.0f));
     const glm::vec3 world_cart_position = segment_position + world_offset;

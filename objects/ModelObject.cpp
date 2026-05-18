@@ -1,6 +1,18 @@
+// OpenGL Rollercoaster Simulation
+// Copyright (C) 2026 Aven Furness
 //
-// Created by aven on 08/04/2026.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "ModelObject.h"
 
@@ -12,7 +24,7 @@
 
 std::map<std::string, ModelObject::Model> ModelObject::models;
 
-ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const glm::vec3 scale, const std::string& material_name, std::string name) : SceneObject(std::move(name)) {
+ModelObject::ModelObject(const std::string &model_path, const std::string &shader_name, const glm::vec3 position, const glm::vec3 scale, const std::string& material_name, std::string name, bool centre_xz) : SceneObject(std::move(name)) {
     this->shader = get_shader(shader_name);
     this->three_d_model_ = std::make_unique<CThreeDModel>();
 
@@ -31,6 +43,9 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->three_d_model_->ConstructModelFromOBJLoader(*c_obj_loader);
 
     this->three_d_model_->MoveOriginToMin();
+    if (centre_xz) {
+        this->three_d_model_->CentreOnZeroXZ();
+    }
     this->three_d_model_->InitVBO(this->shader.get());
 
     this->material = get_material(material_name);
@@ -38,13 +53,14 @@ ModelObject::ModelObject(const std::string &model_path, const std::string &shade
     this->aabb_dimensions = ModelObject::get_aabb_dimensions();
 }
 
-ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position, const glm::vec3 dimensions, std::string name) :
+ModelObject::ModelObject(const std::string &model_name, const glm::vec3 position, const glm::vec3 dimensions, std::string name, bool centre_xz) :
     ModelObject(models.at(model_name).model_path,
         models.at(model_name).shader_name,
         position,
         dimensions,
         models.at(model_name).material_name,
-        std::move(name)){
+        std::move(name),
+        centre_xz){
 }
 
 glm::vec3 ModelObject::get_aabb_dimensions() {

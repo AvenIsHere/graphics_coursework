@@ -589,6 +589,19 @@ void CThreeDModel::MoveOriginToMin() {
 	this->CalcCentrePoint();
 }
 
+void CThreeDModel::CentreOnZeroXZ() {
+	if (m_pvVertices == nullptr) return;
+
+	this->CalcCentrePoint();
+
+	for (int count = 0; count < m_iNumberOfVertices; count++) {
+		m_pvVertices[count].x -= m_obCentrePoint.x;
+		m_pvVertices[count].z -= m_obCentrePoint.z;
+	}
+
+	this->CalcCentrePoint();
+}
+
 /*
  *	Method	: InitVBO
  *
